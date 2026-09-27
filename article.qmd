@@ -15,7 +15,7 @@ link-citations: true
 
 # このノートの範囲
 
-このノートは、各メーカーが公開している仕様書・データシート・ホワイトペーパーに記載された**前向きの符号化関数**を再実装し、同じ座標系に置いて比較するためのものです。カメラ実機を測定してOETFを推定したものではなく、各社の内部画像処理、センサー固有処理、EI依存処理、量子化、クリップ、メタデータ処理まで再現するものでもありません。
+このノートでは、各メーカーが公開している仕様書・データシート・ホワイトペーパーの**前向き符号化関数**を再実装し、同じ座標系に置いて比較します。実機の内部処理を直接検証したものではありません。センサー固有処理、EI依存処理、量子化、クリップ、メタデータ処理などは、公開式と異なる可能性があります。
 
 したがって、ここでいう「ARRI LogC3」「S-Log3」「N-Log」などは、厳密には**公開文書に書かれた数式の実装**です。係数が有限桁で公表されている場合、接続点に見えるごく小さな値のずれが、設計上の不連続なのか、公開係数の丸めによるものなのかは区別できません。本稿ではその場合、`as printed`（公表式をそのまま計算した結果）として扱います。
 
@@ -74,17 +74,11 @@ $$
 
 # 実装したカメラLog
 
-今回の版では次を実装しています。
+曲線の一覧は `curve_specs/curves.yaml` から生成しています。現在の対象は次の通りです。
 
-- ARRI LogC3 EI800（exposure-value parameter set）[@arri-logc3]
-- ARRI LogC4 [@arri-logc4]
-- Sony S-Log3 [@sony-slog3]
-- Panasonic V-Log [@panasonic-vlog]
-- FUJIFILM F-Log [@fujifilm-flog]
-- FUJIFILM F-Log2 [@fujifilm-flog2]
-- Nikon N-Log [@nikon-nlog]
-- Canon Log / Canon Log 2 / Canon Log 3 [@canon-log]
-- RED Log3G10 [@red-log3g10]
+{{< include generated/camera_curves.qmd >}}
+
+新しい曲線が既存の数式モデルで表せる場合は、レジストリに1項目追加して再生成するだけで、比較図・CSV・チェックボックス・接続表・個別図・PDFまで同時に更新されます。新しい数式型の場合だけ `scripts/curve_models.py` にモデルを追加します。
 
 ## カーブ本体
 
@@ -152,19 +146,7 @@ $$
 
 `1023×y` と `1023×dy/dstop` は、正規化出力を単純に1023倍した**比較用の尺度**です。すべてのフォーマットのネイティブ10-bit符号値を意味しません。たとえばLogC4は12-bit指向の仕様として定義されています。[@arri-logc4]
 
-| Curve            |   y(18%) |   1023×y |   1023×dy/dstop at 18% |   d²y/dstop² at 18% |
-|:-----------------|---------:|---------:|---------------------:|------------------:|
-| ARRI LogC3 EI800 | 0.391007 |  400     |              72.3416 |          0.002435 |
-| ARRI LogC4       | 0.278396 |  284.799 |              57.1768 |          0.005324 |
-| Sony S-Log3      | 0.410557 |  420     |              74.5762 |          0.002659 |
-| Panasonic V-Log  | 0.423311 |  433.048 |              70.9348 |          0.002223 |
-| FUJIFILM F-Log   | 0.459318 |  469.883 |              96.9637 |          0.005682 |
-| FUJIFILM F-Log2  | 0.391007 |  400     |              70.9364 |          0.002926 |
-| Nikon N-Log      | 0.363668 |  372.032 |              82.5194 |          0.020128 |
-| Canon Log        | 0.34339  |  351.288 |              93.5126 |          0.020898 |
-| Canon Log 2      | 0.398255 |  407.415 |              70.2927 |          0.002586 |
-| Canon Log 3      | 0.343389 |  351.287 |              84.8026 |          0.014377 |
-| RED Log3G10      | 0.333333 |  341     |              63.2974 |          0.003584 |
+{{< include generated/summary_table.qmd >}}
 
 # 接続点を比較する
 
@@ -176,25 +158,13 @@ piecewise関数では、接続点で何を一致させているかを分けて�
 
 以下は**公表式に印刷された係数をそのまま使った数値判定**です。`approx.` は公開係数の丸め精度ではほぼ一致する、という意味であり、メーカーの設計意図を断定するものではありません。
 
-| Curve            |        Join | Domain                 | Lower branch                        | Upper branch                        | C0                                   | C1                                   | C2                       |
-|:-----------------|------------:|:-----------------------|:------------------------------------|:------------------------------------|:-------------------------------------|:-------------------------------------|:-------------------------|
-| ARRI LogC3 EI800 |  0.010591   | r                      | linear                              | log10                               | approx. (within published precision) | approx. (within published precision) | no                       |
-| ARRI LogC4       | -0.018057   | r                      | linear extension (negative domain)  | log2                                | yes (exact/as printed)               | yes (exact/as printed)               | no                       |
-| Sony S-Log3      |  0.01125    | r                      | linear                              | log10                               | yes (exact/as printed)               | no (as printed)                      | no                       |
-| Panasonic V-Log  |  0.01       | r                      | linear                              | log10                               | approx. (within published precision) | approx. (within published precision) | no                       |
-| FUJIFILM F-Log   |  0.00089    | r                      | linear                              | log10                               | approx. (within published precision) | no (as printed)                      | no                       |
-| FUJIFILM F-Log2  |  0.000889   | r                      | linear                              | log10                               | approx. (within published precision) | no (as printed)                      | no                       |
-| Nikon N-Log      |  0.328      | r                      | cube root                           | natural log                         | approx. (within published precision) | no (as printed)                      | no                       |
-| Canon Log        |  0          | published scene-linear | signed log branch                   | signed log branch                   | yes (exact/as printed)               | yes (exact/as printed)               | no                       |
-| Canon Log 2      |  0          | published scene-linear | signed log branch                   | signed log branch                   | yes (exact/as printed)               | yes (exact/as printed)               | no                       |
-| Canon Log 3      |  0.0126     | r (positive join)      | linear middle section               | log10                               | approx. (within published precision) | approx. (within published precision) | no                       |
-| RED Log3G10      | -0.01       | r                      | linear extension (negative domain)  | log10                               | yes (exact/as printed)               | approx. (within published precision) | no                       |
-| CIE L* / 100     |  0.00885645 | Y/Yn                   | linear                              | cube root                           | yes (exact/as printed)               | yes (exact/as printed)               | no                       |
-| Cineon reference |             | none                   | single smooth log with black offset | single smooth log with black offset | smooth/no piecewise join             | smooth/no piecewise join             | smooth/no piecewise join |
+{{< include generated/junction_table.qmd >}}
 
 ここでかなり設計差が見えます。
 
 S-Log3は関数値は接続していますが、公表式をそのまま微分すると線形枝とLog枝の傾きは一致しません。V-LogとLogC3は、公開係数の精度では1階微分までほぼ一致します。F-Log/F-Log2は値はほぼつながりますが、傾きには明確な差が残ります。N-Logはさらに異なり、低域が線形ではなく立方根です。[@sony-slog3; @panasonic-vlog; @arri-logc3; @fujifilm-flog; @fujifilm-flog2; @nikon-nlog]
+
+Apple Logは、負値側のゼロ枝から放物線へ入り、$R_t=0.01$ でLog枝へ接続する三枝構成です。正の接続点では、公表係数の精度で関数値と1階微分がほぼ一致しますが、2階微分は一致しません。DJI D-Logは $r=0.0078$ で線形枝からLog枝へ移り、18%グレーは公開表で10-bit code 408です。X9版のホワイトペーパーも同じ linear-to-D-Log 変換式を示し、EIによって主にクリップレベル側が変わることを説明しています。[@apple-log; @dji-dlog-2017; @dji-dlog-x9]
 
 Canon Log 3は中央に線形区間を持ち、その両側をLog枝で接続します。公開式では1階微分までほぼ一致します。一方、Canon Log / Log 2は0を境に符号反転したLog枝をつなぐ形で、0において $C^1$ ですが $C^2$ ではありません。[@canon-log]
 
@@ -274,6 +244,12 @@ Labは「意図的に$C^1$接続されたpiecewise関数」、Cineonは「単一
 
 この方向まで進めると、Logカーブ比較というより「1次元伝達関数を局所ゲイン・曲率・接続条件で読む」ための小さな解析フレームワークになります。
 
+# 一次資料リンク集
+
+このページは解析ノートであると同時に、各社が公開しているLog仕様書・ホワイトペーパーへの索引としても使えるようにしています。以下の一覧も曲線レジストリから自動生成されます。
+
+{{< include generated/primary_sources.qmd >}}
+
 # 再現用ファイル
 
 本ページのソースと再現用ファイルは GitHub リポジトリで公開します。主要ファイルは以下から直接参照できます。
@@ -285,6 +261,9 @@ Labは「意図的に$C^1$接続されたpiecewise関数」、Cineonは「単一
 - [BibTeX references](https://github.com/goldkiss2010-ai/log_curve_derivatives_github_pages/blob/main/references.bib)
 - [Static PDF contact sheet](downloads/log-gamma-derivatives-contact-sheet.pdf)
 
-本ノートに対応する生成スクリプトは `scripts/`、数値表は `data/` にまとめています。SVGは `assets/figures/` にベクターのまま収録しています。公開HTMLはこれらの静的資産を参照しており、メーカーPDFそのものは再配布していません。
+本ノートに対応する生成スクリプトは `scripts/`、数値表は `data/` にまとめています。曲線定義は `curve_specs/curves.yaml`、出典情報は `curve_specs/sources.yaml` が基準です。`python scripts/build_all.py` を実行すると、CSV、SVG、インタラクティブ比較、個別図、静的PDF、参考文献、公開用 `index.html` を一括再生成します。SVGは `assets/figures/` にベクターのまま収録し、メーカーPDFそのものは再配布していません。詳しい追加手順は `ADDING_A_CURVE.md` に記載しています。
 
 # 参考文献
+
+::: {#refs}
+:::

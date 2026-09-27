@@ -1,0 +1,125 @@
+sources:
+  arri-logc3:
+    type: techreport
+    author: Brendel, Harald and Goldstone, Joseph
+    organization: ARRI
+    title: ALEXA Log C Curve — Usage in VFX
+    year: 2017
+    month: March
+    url: https://www.arri.com/resource/blob/31918/66f56e6abb6e5b6553929edf9aa7483e/2017-03-alexa-logc-curve-in-vfx-data.pdf
+    note: LogC3 exposure-value formula and EI-dependent parameters
+  arri-logc4:
+    type: techreport
+    author: ARRI
+    organization: ARRI
+    title: ARRI LogC4 Logarithmic Color Space Specification
+    year: 2025
+    month: January
+    url: https://www.arri.com/resource/blob/278790/dc29f7399c1dc9553d329e27f1409a89/2022-05-arri-logc4-specification-data.pdf
+  sony-slog3:
+    type: techreport
+    author: Sony Corporation
+    organization: Sony Corporation
+    title: Technical Summary for S-Gamut3.Cine/S-Log3 and S-Gamut3/S-Log3
+    year: 2014
+    url: https://pro.sony/s3/cms-static-content/uploadfile/06/1237494271406.pdf
+  panasonic-vlog:
+    type: techreport
+    author: Panasonic Corporation
+    organization: Panasonic Corporation
+    title: V-Log/V-Gamut Reference Manual
+    year: 2014
+    url: https://pro-av.panasonic.net/en/cinema_camera_varicam_eva/support/pdf/VARICAM_V-Log_V-Gamut.pdf
+    note: Rev. 1.0
+  fujifilm-flog:
+    type: techreport
+    author: FUJIFILM Corporation
+    organization: FUJIFILM Corporation
+    title: F-Log Data Sheet
+    year: 2024
+    url: https://dl.fujifilm-x.com/technical-data/F-Log_DataSheet_E_Ver.1.2.pdf
+    note: Ver. 1.2
+  fujifilm-flog2:
+    type: techreport
+    author: FUJIFILM Corporation
+    organization: FUJIFILM Corporation
+    title: F-Log2 Data Sheet
+    year: 2024
+    url: https://dl.fujifilm-x.com/technical-data/F-Log2_DataSheet_E_Ver.1.1.pdf
+    note: Ver. 1.1
+  nikon-nlog:
+    type: techreport
+    author: Nikon Corporation
+    organization: Nikon Corporation
+    title: N-Log Specification Document
+    year: 2018
+    month: September
+    url: https://download.nikonimglib.com/archive3/hDCmK00m9JDI03RPruD74xpoU905/N-Log_Specification_%28En%2901.pdf
+    note: Version 1.0.0
+  canon-log:
+    type: techreport
+    author: Canon USA, Inc.
+    organization: Canon USA, Inc.
+    title: Canon Log Gamma Curves — Description of Canon Log, Canon Log 2 and Canon Log 3 Gamma Curves
+    year: 2018
+    month: November
+    url: https://www.usa.canon.com/content/dam/canon-assets/white-papers/pro/white-paper-canon-log-gamma-curves.pdf
+  red-log3g10:
+    type: techreport
+    author: RED Digital Cinema
+    organization: RED Digital Cinema
+    title: White Paper on REDWideGamutRGB and Log3G10
+    year: 2017
+    url: https://docs.red.com/955-0187/PDF/915-0187%20Rev-C%20%20%20RED%20OPS,%20White%20Paper%20on%20REDWideGamutRGB%20and%20Log3G10.pdf
+    note: Form 915-0187 Rev C
+  apple-log:
+    type: techreport
+    author: Apple Inc.
+    organization: Apple Inc.
+    title: Apple Log Profile White Paper
+    year: 2023
+    month: September
+    url: https://developer.apple.com/download/all/?q=Apple%20Log%20Profile
+    note: Apple Developer Downloads; the white paper defines the scene-reflection encoding function and 18% gray value.
+  dji-dlog-2017:
+    type: techreport
+    author: DJI
+    organization: DJI
+    title: White Paper on D-Log and D-Gamut of DJI Cinema Color System
+    year: 2017
+    url: https://assets.ctfassets.net/et769tc4wc1v/5FsWboWAvO3VNfIUzvWCFa/e852902687ccfbcd418979ee625a1324/D-Log_D-Gamut_Whitepaper.pdf
+    note: Original D-Log formula; 0 stop = 18% mid gray; 18% = code 408 in the published table.
+  dji-dlog-x9:
+    type: techreport
+    author: DJI
+    organization: DJI
+    title: White Paper on D-Log and D-Gamut of DJI Cinema Color System — DJI Zenmuse X9 6K & 8K
+    year: 2022
+    month: February
+    url: https://dl.djicdn.com/downloads/DJI_Ronin_4D/X9_D_Log_D_Gamut_Whitepaper.pdf
+    note: Confirms the same linear-to-D-Log conversion function for native EI; clipping level varies with EI.
+  cie-lab:
+    type: misc
+    author: CIE
+    organization: CIE
+    title: CIE 1976 L*a*b* colour space (CIELAB colour space)
+    year: 2020
+    url: https://cie.co.at/eilvterm/17-23-076
+    note: CIE e-ILV term 17-23-076; see also ISO/CIE 11664-4 and CIE 15.
+  kodak-cineon:
+    type: techreport
+    author: Eastman Kodak Company
+    organization: Eastman Kodak Company
+    title: Conversion of 10-bit Log Film Data to 8-bit Linear or Video Data for the Cineon Digital Film System
+    year: 1995
+    month: July
+    note: Version 2.1; Cineon reference black 95, reference white 685, density step 0.002.
+  filmlight-cineon:
+    type: techreport
+    author: FilmLight Ltd.
+    organization: FilmLight Ltd.
+    title: Setting a Truelight Profile
+    year: 2010
+    month: November
+    url: https://www.filmlight.ltd.uk/pdf/whitepapers/FL-TL-TN-0416-SettingTLProfile.pdf
+    note: Documents the conventional Cineon linear-to-log reference formula used here.

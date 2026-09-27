@@ -1,0 +1,19 @@
+| Curve | Junction | Join | Domain | Lower / left branch | Upper / right branch | C0 | C1 | C2 |
+| :--- | :--- | ---: | :--- | :--- | :--- | :--- | :--- | :--- |
+| ARRI LogC3 EI800 | linear / log10 | 0.010591 | r | linear | log10 | approx. (within published precision) | approx. (within published precision) | no |
+| ARRI LogC4 | linear extension / log2 | -0.018057 | r | linear extension | log2 | yes (exact/as printed) | yes (exact/as printed) | no |
+| Sony S-Log3 | linear / log10 | 0.01125 | r | linear | log10 | yes (exact/as printed) | no (as printed) | no |
+| Panasonic V-Log | linear / log10 | 0.01 | r | linear | log10 | approx. (within published precision) | approx. (within published precision) | no |
+| FUJIFILM F-Log | linear / log10 | 0.00089 | r | linear | log10 | approx. (within published precision) | no (as printed) | no |
+| FUJIFILM F-Log2 | linear / log10 | 0.000889 | r | linear | log10 | approx. (within published precision) | no (as printed) | no |
+| Nikon N-Log | cube root / ln | 0.328 | r | cube root | natural log | approx. (within published precision) | no (as printed) | no |
+| Canon Log | negative / positive log | 0 | published scene-linear | signed log branch | signed log branch | yes (exact/as printed) | yes (exact/as printed) | no |
+| Canon Log 2 | negative / positive log | 0 | published scene-linear | signed log branch | signed log branch | yes (exact/as printed) | yes (exact/as printed) | no |
+| Canon Log 3 | negative log / linear | -0.0126 | r | negative log | linear middle | approx. (within published precision) | approx. (within published precision) | no |
+| Canon Log 3 | linear / positive log | 0.0126 | r | linear middle | positive log | approx. (within published precision) | approx. (within published precision) | no |
+| RED Log3G10 | linear extension / log10 | -0.01 | r | linear extension | log10 | yes (exact/as printed) | approx. (within published precision) | no |
+| Apple Log | zero / parabola | -0.05641088 | R | zero | parabola | yes (exact/as printed) | yes (exact/as printed) | no |
+| Apple Log | parabola / log2 | 0.01 | R | parabola | log2 | approx. (within published precision) | approx. (within published precision) | no |
+| DJI D-Log (native EI) | linear / log10 | 0.0078 | r | linear | log10 | approx. (within published precision) | no (as printed) | no |
+| CIE L* / 100 | linear / cube root | 0.008856452 | Y/Yn | linear | cube root | yes (exact/as printed) | yes (exact/as printed) | no |
+| Cineon reference | — |  | none | single smooth log with black offset | single smooth log with black offset | smooth/no piecewise join | smooth/no piecewise join | smooth/no piecewise join |

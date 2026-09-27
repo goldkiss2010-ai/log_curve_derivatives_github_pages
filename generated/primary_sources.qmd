@@ -1,0 +1,14 @@
+| Organization | Specification / white paper | Year |
+| :--- | :--- | ---: |
+| ARRI | [ALEXA Log C Curve — Usage in VFX](https://www.arri.com/resource/blob/31918/66f56e6abb6e5b6553929edf9aa7483e/2017-03-alexa-logc-curve-in-vfx-data.pdf) | 2017 |
+| ARRI | [ARRI LogC4 Logarithmic Color Space Specification](https://www.arri.com/resource/blob/278790/dc29f7399c1dc9553d329e27f1409a89/2022-05-arri-logc4-specification-data.pdf) | 2025 |
+| Sony Corporation | [Technical Summary for S-Gamut3.Cine/S-Log3 and S-Gamut3/S-Log3](https://pro.sony/s3/cms-static-content/uploadfile/06/1237494271406.pdf) | 2014 |
+| Panasonic Corporation | [V-Log/V-Gamut Reference Manual](https://pro-av.panasonic.net/en/cinema_camera_varicam_eva/support/pdf/VARICAM_V-Log_V-Gamut.pdf) | 2014 |
+| FUJIFILM Corporation | [F-Log Data Sheet](https://dl.fujifilm-x.com/technical-data/F-Log_DataSheet_E_Ver.1.2.pdf) | 2024 |
+| FUJIFILM Corporation | [F-Log2 Data Sheet](https://dl.fujifilm-x.com/technical-data/F-Log2_DataSheet_E_Ver.1.1.pdf) | 2024 |
+| Nikon Corporation | [N-Log Specification Document](https://download.nikonimglib.com/archive3/hDCmK00m9JDI03RPruD74xpoU905/N-Log_Specification_%28En%2901.pdf) | 2018 |
+| Canon USA, Inc. | [Canon Log Gamma Curves — Description of Canon Log, Canon Log 2 and Canon Log 3 Gamma Curves](https://www.usa.canon.com/content/dam/canon-assets/white-papers/pro/white-paper-canon-log-gamma-curves.pdf) | 2018 |
+| RED Digital Cinema | [White Paper on REDWideGamutRGB and Log3G10](https://docs.red.com/955-0187/PDF/915-0187%20Rev-C%20%20%20RED%20OPS,%20White%20Paper%20on%20REDWideGamutRGB%20and%20Log3G10.pdf) | 2017 |
+| Apple Inc. | [Apple Log Profile White Paper](https://developer.apple.com/download/all/?q=Apple%20Log%20Profile) | 2023 |
+| DJI | [White Paper on D-Log and D-Gamut of DJI Cinema Color System](https://assets.ctfassets.net/et769tc4wc1v/5FsWboWAvO3VNfIUzvWCFa/e852902687ccfbcd418979ee625a1324/D-Log_D-Gamut_Whitepaper.pdf) | 2017 |
+| DJI | [White Paper on D-Log and D-Gamut of DJI Cinema Color System — DJI Zenmuse X9 6K & 8K](https://dl.djicdn.com/downloads/DJI_Ronin_4D/X9_D_Log_D_Gamut_Whitepaper.pdf) | 2022 |

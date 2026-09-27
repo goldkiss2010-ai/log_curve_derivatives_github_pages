@@ -1,0 +1,159 @@
+version: 1
+comparison:
+  gray_reference: 0.18
+  scene_min: 1.0e-5
+  scene_max: 16.0
+  stop_min: -12.0
+  stop_max: 10.0
+
+curves:
+  - id: arri-logc3-ei800
+    name: ARRI LogC3 EI800
+    family: camera
+    model: commonlog
+    params: {cut: 0.010591, a: 5.555556, b: 0.052272, c: 0.247190, d: 0.385537, e: 5.367655, f: 0.092809}
+    branches: {low: linear, high: log10}
+    junctions:
+      - {id: toe, value: 0.010591, domain: r, label: linear / log10, primary: true}
+    sources: [arri-logc3]
+
+  - id: arri-logc4
+    name: ARRI LogC4
+    family: camera
+    model: logc4
+    params: {code_max: 1023.0, black_code: 95.0, exposure_scale: 117.45}
+    branches: {low: linear extension, high: log2}
+    junctions:
+      - {id: negative-join, derived: logc4_t, domain: r, label: linear extension / log2, primary: true}
+    sources: [arri-logc4]
+
+  - id: sony-s-log3
+    name: Sony S-Log3
+    family: camera
+    model: slog3
+    params: {cut: 0.01125}
+    branches: {low: linear, high: log10}
+    junctions:
+      - {id: toe, value: 0.01125, domain: r, label: linear / log10, primary: true}
+    sources: [sony-slog3]
+
+  - id: panasonic-v-log
+    name: Panasonic V-Log
+    family: camera
+    model: vlog
+    params: {cut: 0.01}
+    branches: {low: linear, high: log10}
+    junctions:
+      - {id: toe, value: 0.01, domain: r, label: linear / log10, primary: true}
+    sources: [panasonic-vlog]
+
+  - id: fujifilm-f-log
+    name: FUJIFILM F-Log
+    family: camera
+    model: commonlog
+    params: {cut: 0.00089, a: 0.555556, b: 0.009468, c: 0.344676, d: 0.790453, e: 8.735631, f: 0.092864}
+    branches: {low: linear, high: log10}
+    junctions:
+      - {id: toe, value: 0.00089, domain: r, label: linear / log10, primary: true}
+    sources: [fujifilm-flog]
+
+  - id: fujifilm-f-log2
+    name: FUJIFILM F-Log2
+    family: camera
+    model: commonlog
+    params: {cut: 0.000889, a: 5.555556, b: 0.064829, c: 0.245281, d: 0.384316, e: 8.799461, f: 0.092864}
+    branches: {low: linear, high: log10}
+    junctions:
+      - {id: toe, value: 0.000889, domain: r, label: linear / log10, primary: true}
+    sources: [fujifilm-flog2]
+
+  - id: nikon-n-log
+    name: Nikon N-Log
+    family: camera
+    model: nlog
+    params: {cut: 0.328}
+    branches: {low: cube root, high: natural log}
+    junctions:
+      - {id: root-log, value: 0.328, domain: r, label: cube root / ln, primary: true}
+    sources: [nikon-nlog]
+
+  - id: canon-log
+    name: Canon Log
+    family: camera
+    model: canonlog
+    params: {reflection_scale: 0.9}
+    branches: {low: signed log branch, high: signed log branch}
+    junctions:
+      - {id: zero, value: 0.0, domain: published scene-linear, label: negative / positive log, primary: true}
+    sources: [canon-log]
+
+  - id: canon-log-2
+    name: Canon Log 2
+    family: camera
+    model: canonlog2
+    params: {reflection_scale: 0.9}
+    branches: {low: signed log branch, high: signed log branch}
+    junctions:
+      - {id: zero, value: 0.0, domain: published scene-linear, label: negative / positive log, primary: true}
+    sources: [canon-log]
+
+  - id: canon-log-3
+    name: Canon Log 3
+    family: camera
+    model: canonlog3
+    params: {reflection_scale: 0.9, published_join: 0.014}
+    branches: {low: log / linear / log, high: log / linear / log}
+    junctions:
+      - {id: negative-join, derived: canonlog3_negative, domain: r, label: negative log / linear, left_branch: negative log, right_branch: linear middle}
+      - {id: positive-join, derived: canonlog3_positive, domain: r, label: linear / positive log, left_branch: linear middle, right_branch: positive log, primary: true}
+    sources: [canon-log]
+
+  - id: red-log3g10
+    name: RED Log3G10
+    family: camera
+    model: log3g10
+    params: {a: 0.224282, b: 155.975327, offset: 0.01, linear_slope: 15.1927}
+    branches: {low: linear extension, high: log10}
+    junctions:
+      - {id: negative-join, value: -0.01, domain: r, label: linear extension / log10, primary: true}
+    sources: [red-log3g10]
+
+  - id: apple-log
+    name: Apple Log
+    family: camera
+    model: applelog
+    params: {R0: -0.05641088, Rt: 0.01, c: 47.28711236, beta: 0.00964052, gamma: 0.08550479, delta: 0.69336945}
+    branches: {low: zero / parabola, high: log2}
+    junctions:
+      - {id: floor-parabola, value: -0.05641088, domain: R, label: zero / parabola, left_branch: zero, right_branch: parabola}
+      - {id: parabola-log, value: 0.01, domain: R, label: parabola / log2, left_branch: parabola, right_branch: log2, primary: true}
+    sources: [apple-log]
+
+  - id: dji-d-log
+    name: DJI D-Log (native EI)
+    family: camera
+    model: djidlog
+    params: {cut: 0.0078, linear_slope: 6.025, linear_offset: 0.0929, log_input_scale: 0.9892, log_input_offset: 0.0108, log_scale: 0.256663, log_offset: 0.584555}
+    branches: {low: linear, high: log10}
+    junctions:
+      - {id: toe, value: 0.0078, domain: r, label: linear / log10, primary: true}
+    sources: [dji-dlog-2017, dji-dlog-x9]
+
+  - id: cie-lstar
+    name: CIE L* / 100
+    family: reference
+    model: lab
+    params: {}
+    branches: {low: linear, high: cube root}
+    junctions:
+      - {id: lab-knee, derived: lab_epsilon, domain: Y/Yn, label: linear / cube root, primary: true}
+    sources: [cie-lab]
+
+  - id: cineon-reference
+    name: Cineon reference
+    family: reference
+    model: cineon
+    params: {black_code: 95.0, white_code: 685.0, density_codes_per_decade: 300.0, code_max: 1023.0}
+    branches: {low: single smooth log with black offset, high: single smooth log with black offset}
+    junctions: []
+    sources: [kodak-cineon, filmlight-cineon]

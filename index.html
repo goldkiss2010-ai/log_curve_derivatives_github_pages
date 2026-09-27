@@ -4,153 +4,8 @@
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>公開仕様から見るLogカーブ — 微分・2階微分・接続条件</title>
+  <title>公開仕様から見るLogカーブ</title>
   <style>
-    html {
-      color: #1a1a1a;
-      background-color: #fdfdfd;
-    }
-    body {
-      margin: 0 auto;
-      max-width: 36em;
-      padding-left: 50px;
-      padding-right: 50px;
-      padding-top: 50px;
-      padding-bottom: 50px;
-      hyphens: auto;
-      overflow-wrap: break-word;
-      text-rendering: optimizeLegibility;
-      font-kerning: normal;
-    }
-    @media (max-width: 600px) {
-      body {
-        font-size: 0.9em;
-        padding: 12px;
-      }
-      h1 {
-        font-size: 1.8em;
-      }
-    }
-    @media print {
-      html {
-        background-color: white;
-      }
-      body {
-        background-color: transparent;
-        color: black;
-        font-size: 12pt;
-      }
-      p, h2, h3 {
-        orphans: 3;
-        widows: 3;
-      }
-      h2, h3, h4 {
-        page-break-after: avoid;
-      }
-    }
-    p {
-      margin: 1em 0;
-    }
-    a {
-      color: #1a1a1a;
-    }
-    a:visited {
-      color: #1a1a1a;
-    }
-    img {
-      max-width: 100%;
-    }
-    svg {
-      height: auto;
-      max-width: 100%;
-    }
-    h1, h2, h3, h4, h5, h6 {
-      margin-top: 1.4em;
-    }
-    h5, h6 {
-      font-size: 1em;
-      font-style: italic;
-    }
-    h6 {
-      font-weight: normal;
-    }
-    ol, ul {
-      padding-left: 1.7em;
-      margin-top: 1em;
-    }
-    li > ol, li > ul {
-      margin-top: 0;
-    }
-    blockquote {
-      margin: 1em 0 1em 1.7em;
-      padding-left: 1em;
-      border-left: 2px solid #e6e6e6;
-      color: #606060;
-    }
-    code {
-      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
-      font-size: 85%;
-      margin: 0;
-      hyphens: manual;
-    }
-    pre {
-      margin: 1em 0;
-      overflow: auto;
-    }
-    pre code {
-      padding: 0;
-      overflow: visible;
-      overflow-wrap: normal;
-    }
-    .sourceCode {
-     background-color: transparent;
-     overflow: visible;
-    }
-    hr {
-      background-color: #1a1a1a;
-      border: none;
-      height: 1px;
-      margin: 1em 0;
-    }
-    table {
-      margin: 1em 0;
-      border-collapse: collapse;
-      width: 100%;
-      overflow-x: auto;
-      display: block;
-      font-variant-numeric: lining-nums tabular-nums;
-    }
-    table caption {
-      margin-bottom: 0.75em;
-    }
-    tbody {
-      margin-top: 0.5em;
-      border-top: 1px solid #1a1a1a;
-      border-bottom: 1px solid #1a1a1a;
-    }
-    th {
-      border-top: 1px solid #1a1a1a;
-      padding: 0.25em 0.5em 0.25em 0.5em;
-    }
-    td {
-      padding: 0.125em 0.5em 0.25em 0.5em;
-    }
-    header {
-      margin-bottom: 4em;
-      text-align: center;
-    }
-    #TOC li {
-      list-style: none;
-    }
-    #TOC ul {
-      padding-left: 1.3em;
-    }
-    #TOC > ul {
-      padding-left: 0;
-    }
-    #TOC a:not(:hover) {
-      text-decoration: none;
-    }
     code{white-space: pre-wrap;}
     span.smallcaps{font-variant: small-caps;}
     div.columns{display: flex; gap: min(4vw, 1.5em);}
@@ -185,41 +40,81 @@
     }
     div.csl-indent {
       margin-left: 2em;
-    }
-    /* GitHub Pages layout: prose stays narrow; static figures are modestly wider than prose; comparator uses the viewport. */
-    .wide-figure { width:min(760px,94vw); margin-left:50%; transform:translateX(-50%); }
-    .wide-interactive { width:min(1500px,94vw); margin-left:50%; transform:translateX(-50%); }
-    .wide-figure img { width:100%; height:auto; }
-    .wide-interactive iframe { width:100%; min-height:930px; }
-    .site-nav { position:sticky; top:0; z-index:50; width:min(1500px,94vw); margin:0 0 28px 50%; transform:translateX(-50%); background:rgba(253,253,253,.96); border-bottom:1px solid #ddd; padding:10px 4px; display:flex; gap:18px; flex-wrap:wrap; backdrop-filter:blur(8px); }
-    .site-nav a { text-decoration:none; font-size:.92rem; }
-    .site-nav a:hover { text-decoration:underline; }
-    @media (max-width:700px){ .wide-figure,.wide-interactive,.site-nav{width:100%;margin-left:0;transform:none}.wide-interactive iframe{min-height:1200px} }
-  </style>
+    }  </style>
+  <link rel="stylesheet" href="styles.css" />
   <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
-  type="text/javascript" async></script>
-
-<style>
-.repo-links{max-width:760px;margin:1.25rem auto;padding:1rem 1.1rem;border:1px solid #ddd;border-radius:10px;background:#fafafa}
-.repo-links a{display:inline-block;margin:.25rem .55rem .25rem 0}
-</style>
+  <script
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+  type="text/javascript"></script>
 </head>
 <body>
-<nav class="site-nav" aria-label="Project navigation">
-<a href="#このノートの範囲">本文</a>
-<a href="compare.html" target="_blank" rel="noopener">比較ウィンドウを単独で開く</a>
-<a href="downloads/log-gamma-derivatives-contact-sheet.pdf">静的PDF</a>
-<a href="article.qmd">QMDソース</a>
-<a href="data/summary_at_18pct.csv">18%グレー比較CSV</a>
-</nav>
 <header id="title-block-header">
 <h1 class="title">公開仕様から見るLogカーブ</h1>
 <p class="subtitle">微分・2階微分・接続条件 —
 メーカー公開文書の実装比較</p>
 </header>
-<h1 id="このノートの範囲">このノートの範囲</h1>
-<p>このノートは、各メーカーが公開している仕様書・データシート・ホワイトペーパーに記載された<strong>前向きの符号化関数</strong>を再実装し、同じ座標系に置いて比較するためのものです。カメラ実機を測定してOETFを推定したものではなく、各社の内部画像処理、センサー固有処理、EI依存処理、量子化、クリップ、メタデータ処理まで再現するものでもありません。</p>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#このノートの範囲" id="toc-このノートの範囲"><span
+class="toc-section-number">1</span> このノートの範囲</a></li>
+<li><a href="#比較する関数" id="toc-比較する関数"><span
+class="toc-section-number">2</span> 比較する関数</a></li>
+<li><a href="#実装したカメラlog" id="toc-実装したカメラlog"><span
+class="toc-section-number">3</span> 実装したカメラLog</a>
+<ul>
+<li><a href="#カーブ本体" id="toc-カーブ本体"><span
+class="toc-section-number">3.1</span> カーブ本体</a></li>
+</ul></li>
+<li><a href="#scene-linear軸での微分"
+id="toc-scene-linear軸での微分"><span
+class="toc-section-number">4</span> Scene-linear軸での微分</a>
+<ul>
+<li><a href="#階微分" id="toc-階微分"><span
+class="toc-section-number">4.1</span> 1階微分</a></li>
+<li><a href="#階微分-1" id="toc-階微分-1"><span
+class="toc-section-number">4.2</span> 2階微分</a></li>
+</ul></li>
+<li><a href="#stop軸で見る" id="toc-stop軸で見る"><span
+class="toc-section-number">5</span> Stop軸で見る</a>
+<ul>
+<li><a href="#カーブ本体-1" id="toc-カーブ本体-1"><span
+class="toc-section-number">5.1</span> カーブ本体</a></li>
+<li><a href="#stopあたりの符号配分" id="toc-stopあたりの符号配分"><span
+class="toc-section-number">5.2</span> 1 stopあたりの符号配分</a></li>
+<li><a href="#stop軸の2階微分" id="toc-stop軸の2階微分"><span
+class="toc-section-number">5.3</span> Stop軸の2階微分</a></li>
+</ul></li>
+<li><a href="#インタラクティブ比較と接続点拡大"
+id="toc-インタラクティブ比較と接続点拡大"><span
+class="toc-section-number">6</span>
+インタラクティブ比較と接続点拡大</a></li>
+<li><a href="#グレーでの比較" id="toc-グレーでの比較"><span
+class="toc-section-number">7</span> 18%グレーでの比較</a></li>
+<li><a href="#接続点を比較する" id="toc-接続点を比較する"><span
+class="toc-section-number">8</span> 接続点を比較する</a></li>
+<li><a href="#cie-labを接続設計の比較例にする"
+id="toc-cie-labを接続設計の比較例にする"><span
+class="toc-section-number">9</span> CIE
+Labを接続設計の比較例にする</a></li>
+<li><a href="#cineonを歴史的な参照にする"
+id="toc-cineonを歴史的な参照にする"><span
+class="toc-section-number">10</span> Cineonを歴史的な参照にする</a></li>
+<li><a href="#ここまでで見えてくること"
+id="toc-ここまでで見えてくること"><span
+class="toc-section-number">11</span> ここまでで見えてくること</a></li>
+<li><a href="#次の拡張候補" id="toc-次の拡張候補"><span
+class="toc-section-number">12</span> 次の拡張候補</a></li>
+<li><a href="#一次資料リンク集" id="toc-一次資料リンク集"><span
+class="toc-section-number">13</span> 一次資料リンク集</a></li>
+<li><a href="#再現用ファイル" id="toc-再現用ファイル"><span
+class="toc-section-number">14</span> 再現用ファイル</a></li>
+<li><a href="#参考文献" id="toc-参考文献"><span
+class="toc-section-number">15</span> 参考文献</a></li>
+</ul>
+</nav>
+<h1 data-number="1" id="このノートの範囲"><span
+class="header-section-number">1</span> このノートの範囲</h1>
+<p>このノートでは、各メーカーが公開している仕様書・データシート・ホワイトペーパーの<strong>前向き符号化関数</strong>を再実装し、同じ座標系に置いて比較します。実機の内部処理を直接検証したものではありません。センサー固有処理、EI依存処理、量子化、クリップ、メタデータ処理などは、公開式と異なる可能性があります。</p>
 <p>したがって、ここでいう「ARRI
 LogC3」「S-Log3」「N-Log」などは、厳密には<strong>公開文書に書かれた数式の実装</strong>です。係数が有限桁で公表されている場合、接続点に見えるごく小さな値のずれが、設計上の不連続なのか、公開係数の丸めによるものなのかは区別できません。本稿ではその場合、<code>as printed</code>（公表式をそのまま計算した結果）として扱います。</p>
 <p>CIE <span class="math inline">\(L^*\)</span> と Cineon
@@ -230,7 +125,8 @@ class="citation" data-cites="kodak-cineon filmlight-cineon">(<a
 href="#ref-kodak-cineon" role="doc-biblioref">Eastman Kodak Company
 1995</a>; <a href="#ref-filmlight-cineon" role="doc-biblioref">FilmLight
 Ltd. 2010</a>)</span></p>
-<h1 id="比較する関数">比較する関数</h1>
+<h1 data-number="2" id="比較する関数"><span
+class="header-section-number">2</span> 比較する関数</h1>
 <p>カメラLogについて、共通の入力変数を <span
 class="math inline">\(r\)</span> とします。ここでは比較の便宜上、<span
 class="math inline">\(r=0.18\)</span> を18%グレーに対応する scene-linear
@@ -274,12 +170,14 @@ g&#39;&#39;(s)=(\ln 2)^2\left[r f&#39;(r)+r^2 f&#39;&#39;(r)\right]
 stopあたりに符号空間をどれだけ割り当てるか」、<span
 class="math inline">\(g&#39;&#39;(s)\)</span>
 はその割当量がstopごとにどう変化するか、と読めます。</p>
-<h1 id="実装したカメラlog">実装したカメラLog</h1>
-<p>今回の版では次を実装しています。</p>
+<h1 data-number="3" id="実装したカメラlog"><span
+class="header-section-number">3</span> 実装したカメラLog</h1>
+<p>曲線の一覧は <code>curve_specs/curves.yaml</code>
+から生成しています。現在の対象は次の通りです。</p>
 <ul>
-<li>ARRI LogC3 EI800（exposure-value parameter set）<span
-class="citation" data-cites="arri-logc3">(<a href="#ref-arri-logc3"
-role="doc-biblioref">Brendel と Goldstone 2017</a>)</span></li>
+<li>ARRI LogC3 EI800 <span class="citation" data-cites="arri-logc3">(<a
+href="#ref-arri-logc3" role="doc-biblioref">Brendel と Goldstone
+2017</a>)</span></li>
 <li>ARRI LogC4 <span class="citation" data-cites="arri-logc4">(<a
 href="#ref-arri-logc4" role="doc-biblioref">ARRI 2025</a>)</span></li>
 <li>Sony S-Log3 <span class="citation" data-cites="sony-slog3">(<a
@@ -297,31 +195,61 @@ role="doc-biblioref">FUJIFILM Corporation 2024b</a>)</span></li>
 <li>Nikon N-Log <span class="citation" data-cites="nikon-nlog">(<a
 href="#ref-nikon-nlog" role="doc-biblioref">Nikon Corporation
 2018</a>)</span></li>
-<li>Canon Log / Canon Log 2 / Canon Log 3 <span class="citation"
-data-cites="canon-log">(<a href="#ref-canon-log"
-role="doc-biblioref">Canon USA, Inc. 2018</a>)</span></li>
+<li>Canon Log <span class="citation" data-cites="canon-log">(<a
+href="#ref-canon-log" role="doc-biblioref">Canon USA, Inc.
+2018</a>)</span></li>
+<li>Canon Log 2 <span class="citation" data-cites="canon-log">(<a
+href="#ref-canon-log" role="doc-biblioref">Canon USA, Inc.
+2018</a>)</span></li>
+<li>Canon Log 3 <span class="citation" data-cites="canon-log">(<a
+href="#ref-canon-log" role="doc-biblioref">Canon USA, Inc.
+2018</a>)</span></li>
 <li>RED Log3G10 <span class="citation" data-cites="red-log3g10">(<a
 href="#ref-red-log3g10" role="doc-biblioref">RED Digital Cinema
 2017</a>)</span></li>
+<li>Apple Log <span class="citation" data-cites="apple-log">(<a
+href="#ref-apple-log" role="doc-biblioref">Apple Inc.
+2023</a>)</span></li>
+<li>DJI D-Log (native EI) <span class="citation"
+data-cites="dji-dlog-2017 dji-dlog-x9">(<a href="#ref-dji-dlog-2017"
+role="doc-biblioref">DJI 2017</a>, <a href="#ref-dji-dlog-x9"
+role="doc-biblioref">2022</a>)</span></li>
 </ul>
-<h2 id="カーブ本体">カーブ本体</h2>
-<p class="wide-figure"><img src="assets/figures/overview/camera_log_curves_scene_linear.svg" /></p>
+<p>新しい曲線が既存の数式モデルで表せる場合は、レジストリに1項目追加して再生成するだけで、比較図・CSV・チェックボックス・接続表・個別図・PDFまで同時に更新されます。新しい数式型の場合だけ
+<code>scripts/curve_models.py</code> にモデルを追加します。</p>
+<h2 data-number="3.1" id="カーブ本体"><span
+class="header-section-number">3.1</span> カーブ本体</h2>
+<p><img src="assets/figures/overview/camera_log_curves_scene_linear.svg"
+class="overview-figure" /></p>
 <p>カーブ本体を重ねただけでも差は見えますが、設計上の違いは微分の方が読み取りやすくなります。</p>
-<h1 id="scene-linear軸での微分">Scene-linear軸での微分</h1>
-<h2 id="階微分">1階微分</h2>
-<p class="wide-figure"><img src="assets/figures/overview/camera_log_first_derivative_scene_linear.svg" /></p>
+<h1 data-number="4" id="scene-linear軸での微分"><span
+class="header-section-number">4</span> Scene-linear軸での微分</h1>
+<h2 data-number="4.1" id="階微分"><span
+class="header-section-number">4.1</span> 1階微分</h2>
+<p><img
+src="assets/figures/overview/camera_log_first_derivative_scene_linear.svg"
+class="overview-figure" /></p>
 <p><span class="math inline">\(f&#39;(r)\)</span> は scene-linear
 入力に対する局所ゲインです。低域を線形枝で処理する曲線では一定区間が現れ、対数枝へ入ると概ね
 <span class="math inline">\(1/(ar+b)\)</span> 型に低下します。</p>
-<h2 id="階微分-1">2階微分</h2>
-<p class="wide-figure"><img src="assets/figures/overview/camera_log_second_derivative_scene_linear.svg" /></p>
+<h2 data-number="4.2" id="階微分-1"><span
+class="header-section-number">4.2</span> 2階微分</h2>
+<p><img
+src="assets/figures/overview/camera_log_second_derivative_scene_linear.svg"
+class="overview-figure" /></p>
 <p><span class="math inline">\(f&#39;&#39;(r)\)</span>
 は局所ゲインの変化です。線形枝では0、対数枝では通常負となります。したがって、piecewiseな設計では接続点が2階微分で非常に目立ちます。</p>
-<h1 id="stop軸で見る">Stop軸で見る</h1>
-<h2 id="カーブ本体-1">カーブ本体</h2>
-<p class="wide-figure"><img src="assets/figures/overview/camera_log_curves_stops.svg" /></p>
-<h2 id="stopあたりの符号配分">1 stopあたりの符号配分</h2>
-<p class="wide-figure"><img src="assets/figures/overview/camera_log_first_derivative_stops.svg" /></p>
+<h1 data-number="5" id="stop軸で見る"><span
+class="header-section-number">5</span> Stop軸で見る</h1>
+<h2 data-number="5.1" id="カーブ本体-1"><span
+class="header-section-number">5.1</span> カーブ本体</h2>
+<p><img src="assets/figures/overview/camera_log_curves_stops.svg"
+class="overview-figure" /></p>
+<h2 data-number="5.2" id="stopあたりの符号配分"><span
+class="header-section-number">5.2</span> 1 stopあたりの符号配分</h2>
+<p><img
+src="assets/figures/overview/camera_log_first_derivative_stops.svg"
+class="overview-figure" /></p>
 <p>この図は今回もっとも解釈しやすい図の一つです。純粋な <span
 class="math inline">\(\log r\)</span> なら、<span
 class="math inline">\(r=0.18\,2^s\)</span> を代入した後は <span
@@ -338,14 +266,18 @@ x=150\ln r+619
 <p>が一定になります。つまりN-Logの上側は、stop軸では文字通り直線です。<span
 class="citation" data-cites="nikon-nlog">(<a href="#ref-nikon-nlog"
 role="doc-biblioref">Nikon Corporation 2018</a>)</span></p>
-<h2 id="stop軸の2階微分">Stop軸の2階微分</h2>
-<p class="wide-figure"><img src="assets/figures/overview/camera_log_second_derivative_stops.svg" /></p>
+<h2 data-number="5.3" id="stop軸の2階微分"><span
+class="header-section-number">5.3</span> Stop軸の2階微分</h2>
+<p><img
+src="assets/figures/overview/camera_log_second_derivative_stops.svg"
+class="overview-figure" /></p>
 <p>この表現では、「どこから1
 stopあたりの配分がほぼ一定になるか」が見やすくなります。N-Log上側の
 <span class="math inline">\(g&#39;&#39;(s)=0\)</span>
 はその典型例です。</p>
-<h1
-id="インタラクティブ比較と接続点拡大">インタラクティブ比較と接続点拡大</h1>
+<h1 data-number="6" id="インタラクティブ比較と接続点拡大"><span
+class="header-section-number">6</span>
+インタラクティブ比較と接続点拡大</h1>
 <p>静的な全体図は俯瞰用として残し、下の比較ウィンドウではチェックボックスで任意のカーブをハイライトできます。選択は
 scene-linear / stop 軸の6図に同時反映され、同じ選択に応じて接続点近傍の
 value・1階微分・2階微分も表示されます。</p>
@@ -354,19 +286,13 @@ value・1階微分・2階微分も表示されます。</p>
 </iframe>
 </div>
 <p>静的PDFではインタラクティブ要素を分岐し、全体図に加えて各カーブの個別コンタクトシートを収録しています。</p>
-<h1 id="グレーでの比較">18%グレーでの比較</h1>
+<h1 data-number="7" id="グレーでの比較"><span
+class="header-section-number">7</span> 18%グレーでの比較</h1>
 <p><code>1023×y</code> と <code>1023×dy/dstop</code>
 は、正規化出力を単純に1023倍した<strong>比較用の尺度</strong>です。すべてのフォーマットのネイティブ10-bit符号値を意味しません。たとえばLogC4は12-bit指向の仕様として定義されています。<span
 class="citation" data-cites="arri-logc4">(<a href="#ref-arri-logc4"
 role="doc-biblioref">ARRI 2025</a>)</span></p>
 <table>
-<colgroup>
-<col style="width: 22%" />
-<col style="width: 12%" />
-<col style="width: 12%" />
-<col style="width: 27%" />
-<col style="width: 24%" />
-</colgroup>
 <thead>
 <tr class="header">
 <th style="text-align: left;">Curve</th>
@@ -382,81 +308,96 @@ role="doc-biblioref">ARRI 2025</a>)</span></p>
 <td style="text-align: right;">0.391007</td>
 <td style="text-align: right;">400</td>
 <td style="text-align: right;">72.3416</td>
-<td style="text-align: right;">0.002435</td>
+<td style="text-align: right;">0.00243489</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">ARRI LogC4</td>
 <td style="text-align: right;">0.278396</td>
 <td style="text-align: right;">284.799</td>
 <td style="text-align: right;">57.1768</td>
-<td style="text-align: right;">0.005324</td>
+<td style="text-align: right;">0.00532374</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Sony S-Log3</td>
 <td style="text-align: right;">0.410557</td>
 <td style="text-align: right;">420</td>
 <td style="text-align: right;">74.5762</td>
-<td style="text-align: right;">0.002659</td>
+<td style="text-align: right;">0.00265948</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Panasonic V-Log</td>
 <td style="text-align: right;">0.423311</td>
 <td style="text-align: right;">433.048</td>
 <td style="text-align: right;">70.9348</td>
-<td style="text-align: right;">0.002223</td>
+<td style="text-align: right;">0.00222322</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">FUJIFILM F-Log</td>
 <td style="text-align: right;">0.459318</td>
 <td style="text-align: right;">469.883</td>
 <td style="text-align: right;">96.9637</td>
-<td style="text-align: right;">0.005682</td>
+<td style="text-align: right;">0.00568237</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">FUJIFILM F-Log2</td>
 <td style="text-align: right;">0.391007</td>
 <td style="text-align: right;">400</td>
 <td style="text-align: right;">70.9364</td>
-<td style="text-align: right;">0.002926</td>
+<td style="text-align: right;">0.00292623</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Nikon N-Log</td>
 <td style="text-align: right;">0.363668</td>
 <td style="text-align: right;">372.032</td>
 <td style="text-align: right;">82.5194</td>
-<td style="text-align: right;">0.020128</td>
+<td style="text-align: right;">0.0201284</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Canon Log</td>
 <td style="text-align: right;">0.34339</td>
 <td style="text-align: right;">351.288</td>
 <td style="text-align: right;">93.5126</td>
-<td style="text-align: right;">0.020898</td>
+<td style="text-align: right;">0.0208979</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Canon Log 2</td>
 <td style="text-align: right;">0.398255</td>
 <td style="text-align: right;">407.415</td>
 <td style="text-align: right;">70.2927</td>
-<td style="text-align: right;">0.002586</td>
+<td style="text-align: right;">0.00258567</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Canon Log 3</td>
 <td style="text-align: right;">0.343389</td>
 <td style="text-align: right;">351.287</td>
 <td style="text-align: right;">84.8026</td>
-<td style="text-align: right;">0.014377</td>
+<td style="text-align: right;">0.0143768</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">RED Log3G10</td>
 <td style="text-align: right;">0.333333</td>
 <td style="text-align: right;">341</td>
 <td style="text-align: right;">63.2974</td>
-<td style="text-align: right;">0.003584</td>
+<td style="text-align: right;">0.00358353</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Apple Log</td>
+<td style="text-align: right;">0.488272</td>
+<td style="text-align: right;">499.503</td>
+<td style="text-align: right;">83.0247</td>
+<td style="text-align: right;">0.00285974</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">DJI D-Log (native EI)</td>
+<td style="text-align: right;">0.398765</td>
+<td style="text-align: right;">407.936</td>
+<td style="text-align: right;">74.5203</td>
+<td style="text-align: right;">0.00288747</td>
 </tr>
 </tbody>
 </table>
-<h1 id="接続点を比較する">接続点を比較する</h1>
+<h1 data-number="8" id="接続点を比較する"><span
+class="header-section-number">8</span> 接続点を比較する</h1>
 <p>piecewise関数では、接続点で何を一致させているかを分けて考えます。</p>
 <ul>
 <li><span class="math inline">\(C^0\)</span>：関数値が連続</li>
@@ -467,22 +408,24 @@ role="doc-biblioref">ARRI 2025</a>)</span></p>
 は公開係数の丸め精度ではほぼ一致する、という意味であり、メーカーの設計意図を断定するものではありません。</p>
 <table style="width:100%;">
 <colgroup>
-<col style="width: 7%" />
-<col style="width: 5%" />
-<col style="width: 10%" />
-<col style="width: 16%" />
-<col style="width: 16%" />
-<col style="width: 16%" />
-<col style="width: 16%" />
+<col style="width: 11%" />
+<col style="width: 11%" />
+<col style="width: 11%" />
+<col style="width: 11%" />
+<col style="width: 11%" />
+<col style="width: 11%" />
+<col style="width: 11%" />
+<col style="width: 11%" />
 <col style="width: 11%" />
 </colgroup>
 <thead>
 <tr class="header">
 <th style="text-align: left;">Curve</th>
+<th style="text-align: left;">Junction</th>
 <th style="text-align: right;">Join</th>
 <th style="text-align: left;">Domain</th>
-<th style="text-align: left;">Lower branch</th>
-<th style="text-align: left;">Upper branch</th>
+<th style="text-align: left;">Lower / left branch</th>
+<th style="text-align: left;">Upper / right branch</th>
 <th style="text-align: left;">C0</th>
 <th style="text-align: left;">C1</th>
 <th style="text-align: left;">C2</th>
@@ -491,6 +434,7 @@ role="doc-biblioref">ARRI 2025</a>)</span></p>
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">ARRI LogC3 EI800</td>
+<td style="text-align: left;">linear / log10</td>
 <td style="text-align: right;">0.010591</td>
 <td style="text-align: left;">r</td>
 <td style="text-align: left;">linear</td>
@@ -501,9 +445,10 @@ role="doc-biblioref">ARRI 2025</a>)</span></p>
 </tr>
 <tr class="even">
 <td style="text-align: left;">ARRI LogC4</td>
+<td style="text-align: left;">linear extension / log2</td>
 <td style="text-align: right;">-0.018057</td>
 <td style="text-align: left;">r</td>
-<td style="text-align: left;">linear extension (negative domain)</td>
+<td style="text-align: left;">linear extension</td>
 <td style="text-align: left;">log2</td>
 <td style="text-align: left;">yes (exact/as printed)</td>
 <td style="text-align: left;">yes (exact/as printed)</td>
@@ -511,6 +456,7 @@ role="doc-biblioref">ARRI 2025</a>)</span></p>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Sony S-Log3</td>
+<td style="text-align: left;">linear / log10</td>
 <td style="text-align: right;">0.01125</td>
 <td style="text-align: left;">r</td>
 <td style="text-align: left;">linear</td>
@@ -521,6 +467,7 @@ role="doc-biblioref">ARRI 2025</a>)</span></p>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Panasonic V-Log</td>
+<td style="text-align: left;">linear / log10</td>
 <td style="text-align: right;">0.01</td>
 <td style="text-align: left;">r</td>
 <td style="text-align: left;">linear</td>
@@ -531,6 +478,7 @@ role="doc-biblioref">ARRI 2025</a>)</span></p>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">FUJIFILM F-Log</td>
+<td style="text-align: left;">linear / log10</td>
 <td style="text-align: right;">0.00089</td>
 <td style="text-align: left;">r</td>
 <td style="text-align: left;">linear</td>
@@ -541,6 +489,7 @@ role="doc-biblioref">ARRI 2025</a>)</span></p>
 </tr>
 <tr class="even">
 <td style="text-align: left;">FUJIFILM F-Log2</td>
+<td style="text-align: left;">linear / log10</td>
 <td style="text-align: right;">0.000889</td>
 <td style="text-align: left;">r</td>
 <td style="text-align: left;">linear</td>
@@ -551,6 +500,7 @@ role="doc-biblioref">ARRI 2025</a>)</span></p>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Nikon N-Log</td>
+<td style="text-align: left;">cube root / ln</td>
 <td style="text-align: right;">0.328</td>
 <td style="text-align: left;">r</td>
 <td style="text-align: left;">cube root</td>
@@ -561,6 +511,7 @@ role="doc-biblioref">ARRI 2025</a>)</span></p>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Canon Log</td>
+<td style="text-align: left;">negative / positive log</td>
 <td style="text-align: right;">0</td>
 <td style="text-align: left;">published scene-linear</td>
 <td style="text-align: left;">signed log branch</td>
@@ -571,6 +522,7 @@ role="doc-biblioref">ARRI 2025</a>)</span></p>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Canon Log 2</td>
+<td style="text-align: left;">negative / positive log</td>
 <td style="text-align: right;">0</td>
 <td style="text-align: left;">published scene-linear</td>
 <td style="text-align: left;">signed log branch</td>
@@ -581,27 +533,74 @@ role="doc-biblioref">ARRI 2025</a>)</span></p>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Canon Log 3</td>
-<td style="text-align: right;">0.0126</td>
-<td style="text-align: left;">r (positive join)</td>
-<td style="text-align: left;">linear middle section</td>
-<td style="text-align: left;">log10</td>
+<td style="text-align: left;">negative log / linear</td>
+<td style="text-align: right;">-0.0126</td>
+<td style="text-align: left;">r</td>
+<td style="text-align: left;">negative log</td>
+<td style="text-align: left;">linear middle</td>
 <td style="text-align: left;">approx. (within published precision)</td>
 <td style="text-align: left;">approx. (within published precision)</td>
 <td style="text-align: left;">no</td>
 </tr>
 <tr class="odd">
+<td style="text-align: left;">Canon Log 3</td>
+<td style="text-align: left;">linear / positive log</td>
+<td style="text-align: right;">0.0126</td>
+<td style="text-align: left;">r</td>
+<td style="text-align: left;">linear middle</td>
+<td style="text-align: left;">positive log</td>
+<td style="text-align: left;">approx. (within published precision)</td>
+<td style="text-align: left;">approx. (within published precision)</td>
+<td style="text-align: left;">no</td>
+</tr>
+<tr class="even">
 <td style="text-align: left;">RED Log3G10</td>
+<td style="text-align: left;">linear extension / log10</td>
 <td style="text-align: right;">-0.01</td>
 <td style="text-align: left;">r</td>
-<td style="text-align: left;">linear extension (negative domain)</td>
+<td style="text-align: left;">linear extension</td>
 <td style="text-align: left;">log10</td>
 <td style="text-align: left;">yes (exact/as printed)</td>
 <td style="text-align: left;">approx. (within published precision)</td>
 <td style="text-align: left;">no</td>
 </tr>
+<tr class="odd">
+<td style="text-align: left;">Apple Log</td>
+<td style="text-align: left;">zero / parabola</td>
+<td style="text-align: right;">-0.05641088</td>
+<td style="text-align: left;">R</td>
+<td style="text-align: left;">zero</td>
+<td style="text-align: left;">parabola</td>
+<td style="text-align: left;">yes (exact/as printed)</td>
+<td style="text-align: left;">yes (exact/as printed)</td>
+<td style="text-align: left;">no</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Apple Log</td>
+<td style="text-align: left;">parabola / log2</td>
+<td style="text-align: right;">0.01</td>
+<td style="text-align: left;">R</td>
+<td style="text-align: left;">parabola</td>
+<td style="text-align: left;">log2</td>
+<td style="text-align: left;">approx. (within published precision)</td>
+<td style="text-align: left;">approx. (within published precision)</td>
+<td style="text-align: left;">no</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">DJI D-Log (native EI)</td>
+<td style="text-align: left;">linear / log10</td>
+<td style="text-align: right;">0.0078</td>
+<td style="text-align: left;">r</td>
+<td style="text-align: left;">linear</td>
+<td style="text-align: left;">log10</td>
+<td style="text-align: left;">approx. (within published precision)</td>
+<td style="text-align: left;">no (as printed)</td>
+<td style="text-align: left;">no</td>
+</tr>
 <tr class="even">
 <td style="text-align: left;">CIE L* / 100</td>
-<td style="text-align: right;">0.00885645</td>
+<td style="text-align: left;">linear / cube root</td>
+<td style="text-align: right;">0.008856452</td>
 <td style="text-align: left;">Y/Yn</td>
 <td style="text-align: left;">linear</td>
 <td style="text-align: left;">cube root</td>
@@ -611,6 +610,7 @@ role="doc-biblioref">ARRI 2025</a>)</span></p>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Cineon reference</td>
+<td style="text-align: left;">—</td>
 <td style="text-align: right;"></td>
 <td style="text-align: left;">none</td>
 <td style="text-align: left;">single smooth log with black offset</td>
@@ -633,6 +633,17 @@ role="doc-biblioref">FUJIFILM Corporation 2024a</a>, <a
 href="#ref-fujifilm-flog2" role="doc-biblioref">2024b</a>; <a
 href="#ref-nikon-nlog" role="doc-biblioref">Nikon Corporation
 2018</a>)</span></p>
+<p>Apple Logは、負値側のゼロ枝から放物線へ入り、<span
+class="math inline">\(R_t=0.01\)</span>
+でLog枝へ接続する三枝構成です。正の接続点では、公表係数の精度で関数値と1階微分がほぼ一致しますが、2階微分は一致しません。DJI
+D-Logは <span class="math inline">\(r=0.0078\)</span>
+で線形枝からLog枝へ移り、18%グレーは公開表で10-bit code
+408です。X9版のホワイトペーパーも同じ linear-to-D-Log
+変換式を示し、EIによって主にクリップレベル側が変わることを説明しています。<span
+class="citation" data-cites="apple-log dji-dlog-2017 dji-dlog-x9">(<a
+href="#ref-apple-log" role="doc-biblioref">Apple Inc. 2023</a>; <a
+href="#ref-dji-dlog-2017" role="doc-biblioref">DJI 2017</a>, <a
+href="#ref-dji-dlog-x9" role="doc-biblioref">2022</a>)</span></p>
 <p>Canon Log
 3は中央に線形区間を持ち、その両側をLog枝で接続します。公開式では1階微分までほぼ一致します。一方、Canon
 Log / Log 2は0を境に符号反転したLog枝をつなぐ形で、0において <span
@@ -646,7 +657,8 @@ class="citation" data-cites="arri-logc4 red-log3g10">(<a
 href="#ref-arri-logc4" role="doc-biblioref">ARRI 2025</a>; <a
 href="#ref-red-log3g10" role="doc-biblioref">RED Digital Cinema
 2017</a>)</span></p>
-<h1 id="cie-labを接続設計の比較例にする">CIE
+<h1 data-number="9" id="cie-labを接続設計の比較例にする"><span
+class="header-section-number">9</span> CIE
 Labを接続設計の比較例にする</h1>
 <p>CIE 1976 <span class="math inline">\(L^*\)</span>
 は、カメラLogとは目的が違います。しかし「線形枝と非線形枝をどうつなぐか」という問題の非常にきれいな比較例です。CIEの定義は、<span
@@ -676,10 +688,13 @@ class="math inline">\(C^1\)</span>
 連続</strong>です。一方、線形枝の2階微分は0、立方根枝の2階微分は0ではないので
 <strong><span class="math inline">\(C^2\)</span>
 ではありません</strong>。</p>
-<p class="wide-figure"><img src="assets/figures/overview/lab_junction_value.svg" /></p>
-<p class="wide-figure"><img src="assets/figures/overview/lab_junction_first_derivative.svg" /></p>
+<p><img src="assets/figures/overview/lab_junction_value.svg"
+class="overview-figure" /></p>
+<p><img src="assets/figures/overview/lab_junction_first_derivative.svg"
+class="overview-figure" /></p>
 <p>この例を入れることで、「piecewiseであること」自体が問題なのではなく、<strong>接続点で何階まで整合させるかが設計条件である</strong>と整理できます。</p>
-<h1 id="cineonを歴史的な参照にする">Cineonを歴史的な参照にする</h1>
+<h1 data-number="10" id="cineonを歴史的な参照にする"><span
+class="header-section-number">10</span> Cineonを歴史的な参照にする</h1>
 <p>Cineonは現代のカメラLogと同列には扱いません。もともとはネガフィルムの濃度情報を10-bit
 Logで保持するための仕組みで、基準黒95、基準白685、1 codeあたり0.002
 densityという規約を持ちます。<span class="citation"
@@ -697,10 +712,12 @@ o=10^{(95-685)/300}
 y=\frac{685+300\log_{10}\left(r(1-o)+o\right)}{1023}
 \]</span></p>
 <p>を使っています。この式は非負入力域で単一の滑らかなLog関数なので、カメラLogで見られるような低域のpiecewise接続はありません。</p>
-<p class="wide-figure"><img src="assets/figures/overview/reference_curves_lab_cineon.svg" /></p>
+<p><img src="assets/figures/overview/reference_curves_lab_cineon.svg"
+class="overview-figure" /></p>
 <p>Labは「意図的に<span
 class="math inline">\(C^1\)</span>接続されたpiecewise関数」、Cineonは「単一のオフセット付きLog」という対照になり、現代カメラLogのtoe設計を眺める基準として使えます。</p>
-<h1 id="ここまでで見えてくること">ここまでで見えてくること</h1>
+<h1 data-number="11" id="ここまでで見えてくること"><span
+class="header-section-number">11</span> ここまでで見えてくること</h1>
 <p>第一に、「Log」という名称だけでは局所構造はほとんど分かりません。純粋なLogに近い領域、線形toe、立方根toe、負値側の線形延長など、実際の公開式はかなり多様です。</p>
 <p>第二に、カーブ本体より <span class="math inline">\(f&#39;(r)\)</span>
 の方が符号配分を直接見せ、<span
@@ -710,7 +727,8 @@ stopあたり一定の割当」に対応することが直接見えます。</p>
 <p>第三に、接続条件は独立の設計軸として扱えます。Labのように<span
 class="math inline">\(C^1\)</span>を明示的に満たす例を横に置くと、メーカーLogの接続が単なる実装上の細部ではなく、局所的な符号配分を決める条件であることが分かりやすくなります。</p>
 <p>ただし、この比較から各カメラの「画質」「ダイナミックレンジ」「ノイズ性能」を直接順位づけることはできません。それらはセンサー、露出規約、量子化、ノイズ、クリッピング、後段処理まで含む別問題です。本稿が比較しているのは、あくまで<strong>公開された1次元伝達関数そのもの</strong>です。</p>
-<h1 id="次の拡張候補">次の拡張候補</h1>
+<h1 data-number="12" id="次の拡張候補"><span
+class="header-section-number">12</span> 次の拡張候補</h1>
 <p>次に進めるなら、単にメーカー数を増やすより、以下の三方向が有効です。</p>
 <ol type="1">
 <li><strong>逆関数の微分</strong>：<span
@@ -722,42 +740,183 @@ codeが何stopに相当するかを各露光域で比較できます。</li>
 Logだけでなく「低域を別枝で処理する伝達関数」という一般形で比較できます。</li>
 </ol>
 <p>この方向まで進めると、Logカーブ比較というより「1次元伝達関数を局所ゲイン・曲率・接続条件で読む」ための小さな解析フレームワークになります。</p>
-<h1 id="再現用ファイル">再現用ファイル</h1>
-<div class="repo-links">
-<p>ソース、生成スクリプト、数値データは同じGitHubリポジトリにまとめています。主要ファイルへ直接アクセスできます。</p>
-<p>
-<a href="https://github.com/goldkiss2010-ai/log_curve_derivatives_github_pages">GitHub repository</a>
-<a href="https://github.com/goldkiss2010-ai/log_curve_derivatives_github_pages/blob/main/article.qmd">Quarto source</a>
-<a href="https://github.com/goldkiss2010-ai/log_curve_derivatives_github_pages/tree/main/scripts">Generation scripts</a>
-<a href="https://github.com/goldkiss2010-ai/log_curve_derivatives_github_pages/tree/main/data">Numerical data</a>
-<a href="https://github.com/goldkiss2010-ai/log_curve_derivatives_github_pages/blob/main/references.bib">BibTeX references</a>
-<a href="downloads/log-gamma-derivatives-contact-sheet.pdf">Static PDF</a>
-</p>
-</div>
-<p>メーカーPDFそのものは再配布せず、数式の出典は本文末尾と <code>references.bib</code> にまとめています。</p>
-<h1 class="unnumbered" id="参考文献">参考文献</h1>
+<h1 data-number="13" id="一次資料リンク集"><span
+class="header-section-number">13</span> 一次資料リンク集</h1>
+<p>このページは解析ノートであると同時に、各社が公開しているLog仕様書・ホワイトペーパーへの索引としても使えるようにしています。以下の一覧も曲線レジストリから自動生成されます。</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Organization</th>
+<th style="text-align: left;">Specification / white paper</th>
+<th style="text-align: right;">Year</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">ARRI</td>
+<td style="text-align: left;"><a
+href="https://www.arri.com/resource/blob/31918/66f56e6abb6e5b6553929edf9aa7483e/2017-03-alexa-logc-curve-in-vfx-data.pdf">ALEXA
+Log C Curve — Usage in VFX</a></td>
+<td style="text-align: right;">2017</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">ARRI</td>
+<td style="text-align: left;"><a
+href="https://www.arri.com/resource/blob/278790/dc29f7399c1dc9553d329e27f1409a89/2022-05-arri-logc4-specification-data.pdf">ARRI
+LogC4 Logarithmic Color Space Specification</a></td>
+<td style="text-align: right;">2025</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Sony Corporation</td>
+<td style="text-align: left;"><a
+href="https://pro.sony/s3/cms-static-content/uploadfile/06/1237494271406.pdf">Technical
+Summary for S-Gamut3.Cine/S-Log3 and S-Gamut3/S-Log3</a></td>
+<td style="text-align: right;">2014</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Panasonic Corporation</td>
+<td style="text-align: left;"><a
+href="https://pro-av.panasonic.net/en/cinema_camera_varicam_eva/support/pdf/VARICAM_V-Log_V-Gamut.pdf">V-Log/V-Gamut
+Reference Manual</a></td>
+<td style="text-align: right;">2014</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">FUJIFILM Corporation</td>
+<td style="text-align: left;"><a
+href="https://dl.fujifilm-x.com/technical-data/F-Log_DataSheet_E_Ver.1.2.pdf">F-Log
+Data Sheet</a></td>
+<td style="text-align: right;">2024</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">FUJIFILM Corporation</td>
+<td style="text-align: left;"><a
+href="https://dl.fujifilm-x.com/technical-data/F-Log2_DataSheet_E_Ver.1.1.pdf">F-Log2
+Data Sheet</a></td>
+<td style="text-align: right;">2024</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Nikon Corporation</td>
+<td style="text-align: left;"><a
+href="https://download.nikonimglib.com/archive3/hDCmK00m9JDI03RPruD74xpoU905/N-Log_Specification_%28En%2901.pdf">N-Log
+Specification Document</a></td>
+<td style="text-align: right;">2018</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Canon USA, Inc.</td>
+<td style="text-align: left;"><a
+href="https://www.usa.canon.com/content/dam/canon-assets/white-papers/pro/white-paper-canon-log-gamma-curves.pdf">Canon
+Log Gamma Curves — Description of Canon Log, Canon Log 2 and Canon Log 3
+Gamma Curves</a></td>
+<td style="text-align: right;">2018</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">RED Digital Cinema</td>
+<td style="text-align: left;"><a
+href="https://docs.red.com/955-0187/PDF/915-0187%20Rev-C%20%20%20RED%20OPS,%20White%20Paper%20on%20REDWideGamutRGB%20and%20Log3G10.pdf">White
+Paper on REDWideGamutRGB and Log3G10</a></td>
+<td style="text-align: right;">2017</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Apple Inc.</td>
+<td style="text-align: left;"><a
+href="https://developer.apple.com/download/all/?q=Apple%20Log%20Profile">Apple
+Log Profile White Paper</a></td>
+<td style="text-align: right;">2023</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">DJI</td>
+<td style="text-align: left;"><a
+href="https://assets.ctfassets.net/et769tc4wc1v/5FsWboWAvO3VNfIUzvWCFa/e852902687ccfbcd418979ee625a1324/D-Log_D-Gamut_Whitepaper.pdf">White
+Paper on D-Log and D-Gamut of DJI Cinema Color System</a></td>
+<td style="text-align: right;">2017</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">DJI</td>
+<td style="text-align: left;"><a
+href="https://dl.djicdn.com/downloads/DJI_Ronin_4D/X9_D_Log_D_Gamut_Whitepaper.pdf">White
+Paper on D-Log and D-Gamut of DJI Cinema Color System — DJI Zenmuse X9
+6K &amp; 8K</a></td>
+<td style="text-align: right;">2022</td>
+</tr>
+</tbody>
+</table>
+<h1 data-number="14" id="再現用ファイル"><span
+class="header-section-number">14</span> 再現用ファイル</h1>
+<p>本ページのソースと再現用ファイルは GitHub
+リポジトリで公開します。主要ファイルは以下から直接参照できます。</p>
+<ul>
+<li><a
+href="https://github.com/goldkiss2010-ai/log_curve_derivatives_github_pages">GitHub
+repository</a></li>
+<li><a
+href="https://github.com/goldkiss2010-ai/log_curve_derivatives_github_pages/blob/main/article.qmd">Quarto
+source (<code>article.qmd</code>)</a></li>
+<li><a
+href="https://github.com/goldkiss2010-ai/log_curve_derivatives_github_pages/tree/main/scripts">Generation
+scripts</a></li>
+<li><a
+href="https://github.com/goldkiss2010-ai/log_curve_derivatives_github_pages/tree/main/data">Numerical
+data</a></li>
+<li><a
+href="https://github.com/goldkiss2010-ai/log_curve_derivatives_github_pages/blob/main/references.bib">BibTeX
+references</a></li>
+<li><a href="downloads/log-gamma-derivatives-contact-sheet.pdf">Static
+PDF contact sheet</a></li>
+</ul>
+<p>本ノートに対応する生成スクリプトは <code>scripts/</code>、数値表は
+<code>data/</code> にまとめています。曲線定義は
+<code>curve_specs/curves.yaml</code>、出典情報は
+<code>curve_specs/sources.yaml</code>
+が基準です。<code>python scripts/build_all.py</code>
+を実行すると、CSV、SVG、インタラクティブ比較、個別図、静的PDF、参考文献、公開用
+<code>index.html</code> を一括再生成します。SVGは
+<code>assets/figures/</code>
+にベクターのまま収録し、メーカーPDFそのものは再配布していません。詳しい追加手順は
+<code>ADDING_A_CURVE.md</code> に記載しています。</p>
+<h1 data-number="15" id="参考文献"><span
+class="header-section-number">15</span> 参考文献</h1>
 <div id="refs" class="references csl-bib-body hanging-indent"
 data-entry-spacing="0" role="list">
+<div id="ref-apple-log" class="csl-entry" role="listitem">
+Apple Inc. 2023. <span>「Apple Log Profile White Paper」</span>. Apple
+Inc. <a
+href="https://developer.apple.com/download/all/?q=Apple%20Log%20Profile">https://developer.apple.com/download/all/?q=Apple%20Log%20Profile</a>.
+</div>
 <div id="ref-arri-logc4" class="csl-entry" role="listitem">
 ARRI. 2025. <span>「ARRI LogC4 Logarithmic Color Space
 Specification」</span>. ARRI. <a
 href="https://www.arri.com/resource/blob/278790/dc29f7399c1dc9553d329e27f1409a89/2022-05-arri-logc4-specification-data.pdf">https://www.arri.com/resource/blob/278790/dc29f7399c1dc9553d329e27f1409a89/2022-05-arri-logc4-specification-data.pdf</a>.
 </div>
 <div id="ref-arri-logc3" class="csl-entry" role="listitem">
-Brendel, Harald, と Joseph Goldstone. 2017. <span>「ALEXA Log C Curve:
+Brendel, Harald, と Joseph Goldstone. 2017. <span>「ALEXA Log C Curve —
 Usage in VFX」</span>. ARRI. <a
 href="https://www.arri.com/resource/blob/31918/66f56e6abb6e5b6553929edf9aa7483e/2017-03-alexa-logc-curve-in-vfx-data.pdf">https://www.arri.com/resource/blob/31918/66f56e6abb6e5b6553929edf9aa7483e/2017-03-alexa-logc-curve-in-vfx-data.pdf</a>.
 </div>
 <div id="ref-canon-log" class="csl-entry" role="listitem">
-Canon USA, Inc. 2018. <span>「Canon Log Gamma Curves: Description of the
+Canon USA, Inc. 2018. <span>「Canon Log Gamma Curves — Description of
 Canon Log, Canon Log 2 and Canon Log 3 Gamma Curves」</span>. Canon USA,
 Inc. <a
 href="https://www.usa.canon.com/content/dam/canon-assets/white-papers/pro/white-paper-canon-log-gamma-curves.pdf">https://www.usa.canon.com/content/dam/canon-assets/white-papers/pro/white-paper-canon-log-gamma-curves.pdf</a>.
 </div>
 <div id="ref-cie-lab" class="csl-entry" role="listitem">
 CIE. 2020. <span>「CIE 1976 L*a*b* colour space (CIELAB colour
-space)」</span>. CIE e-ILV, term 17-23-076. <a
+space)」</span>. <a
 href="https://cie.co.at/eilvterm/17-23-076">https://cie.co.at/eilvterm/17-23-076</a>.
+</div>
+<div id="ref-dji-dlog-2017" class="csl-entry" role="listitem">
+DJI. 2017. <span>「White Paper on D-Log and D-Gamut of DJI Cinema Color
+System」</span>. DJI. <a
+href="https://assets.ctfassets.net/et769tc4wc1v/5FsWboWAvO3VNfIUzvWCFa/e852902687ccfbcd418979ee625a1324/D-Log_D-Gamut_Whitepaper.pdf">https://assets.ctfassets.net/et769tc4wc1v/5FsWboWAvO3VNfIUzvWCFa/e852902687ccfbcd418979ee625a1324/D-Log_D-Gamut_Whitepaper.pdf</a>.
+</div>
+<div id="ref-dji-dlog-x9" class="csl-entry" role="listitem">
+———. 2022. <span>「White Paper on D-Log and D-Gamut of DJI Cinema Color
+System — DJI Zenmuse X9 6K &amp; 8K」</span>. DJI. <a
+href="https://dl.djicdn.com/downloads/DJI_Ronin_4D/X9_D_Log_D_Gamut_Whitepaper.pdf">https://dl.djicdn.com/downloads/DJI_Ronin_4D/X9_D_Log_D_Gamut_Whitepaper.pdf</a>.
 </div>
 <div id="ref-kodak-cineon" class="csl-entry" role="listitem">
 Eastman Kodak Company. 1995. <span>「Conversion of 10-bit Log Film Data
