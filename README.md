@@ -77,7 +77,7 @@ python scripts/build_all.py
 
 ## GitHub Pagesで公開する
 
-このフォルダの**中身**をリポジトリのルートへpushし、GitHubの `Settings → Pages` で `Deploy from a branch / main / (root)` を選択します。公開済みの `index.html` をそのまま配信するため、Pages側でビルドする必要はありません。
+このフォルダの**中身**をリポジトリのルートへpushし、GitHubの `Settings → Pages` で `Deploy from a branch / master / (root)` を選択します。公開済みの `index.html` をそのまま配信するため、Pages側でビルドする必要はありません。
 
 ## Local preview
 

@@ -255,10 +255,10 @@ Labは「意図的に$C^1$接続されたpiecewise関数」、Cineonは「単一
 本ページのソースと再現用ファイルは GitHub リポジトリで公開します。主要ファイルは以下から直接参照できます。
 
 - [GitHub repository](https://github.com/goldkiss2010-ai/log_curve_derivatives_github_pages)
-- [Quarto source (`article.qmd`)](https://github.com/goldkiss2010-ai/log_curve_derivatives_github_pages/blob/main/article.qmd)
-- [Generation scripts](https://github.com/goldkiss2010-ai/log_curve_derivatives_github_pages/tree/main/scripts)
-- [Numerical data](https://github.com/goldkiss2010-ai/log_curve_derivatives_github_pages/tree/main/data)
-- [BibTeX references](https://github.com/goldkiss2010-ai/log_curve_derivatives_github_pages/blob/main/references.bib)
+- [Quarto source (`article.qmd`)](https://github.com/goldkiss2010-ai/log_curve_derivatives_github_pages/blob/master/article.qmd)
+- [Generation scripts](https://github.com/goldkiss2010-ai/log_curve_derivatives_github_pages/tree/master/scripts)
+- [Numerical data](https://github.com/goldkiss2010-ai/log_curve_derivatives_github_pages/tree/master/data)
+- [BibTeX references](https://github.com/goldkiss2010-ai/log_curve_derivatives_github_pages/blob/master/references.bib)
 - [Static PDF contact sheet](downloads/log-gamma-derivatives-contact-sheet.pdf)
 
 本ノートに対応する生成スクリプトは `scripts/`、数値表は `data/` にまとめています。曲線定義は `curve_specs/curves.yaml`、出典情報は `curve_specs/sources.yaml` が基準です。`python scripts/build_all.py` を実行すると、CSV、SVG、インタラクティブ比較、個別図、静的PDF、参考文献、公開用 `index.html` を一括再生成します。SVGは `assets/figures/` にベクターのまま収録し、メーカーPDFそのものは再配布していません。詳しい追加手順は `ADDING_A_CURVE.md` に記載しています。

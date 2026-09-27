@@ -538,6 +538,7 @@ def resolve_includes(text):
 
 
 def render_index():
+    # styles.css is intentionally renderer-independent: the build may use bare Pandoc.
     src = (ROOT / "article.qmd").read_text(encoding="utf-8")
     merged = resolve_includes(src)
     temp = ROOT / ".article_resolved.qmd"
