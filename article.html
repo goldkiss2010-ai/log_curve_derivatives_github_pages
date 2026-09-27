@@ -1,0 +1,1043 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ja" xml:lang="ja"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>公開仕様から見るLogカーブ</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="article_files/libs/clipboard/clipboard.min.js"></script>
+<script src="article_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="article_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="article_files/libs/quarto-html/popper.min.js"></script>
+<script src="article_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="article_files/libs/quarto-html/anchor.min.js"></script>
+<link href="article_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="article_files/libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="article_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="article_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="article_files/libs/bootstrap/bootstrap-215b371544c282197b31c8aa00ce3677.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="quarto-light">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">目次</h2>
+   
+  <ul>
+  <li><a href="#このノートの範囲" id="toc-このノートの範囲" class="nav-link active" data-scroll-target="#このノートの範囲"><span class="header-section-number">1</span> このノートの範囲</a></li>
+  <li><a href="#比較する関数" id="toc-比較する関数" class="nav-link" data-scroll-target="#比較する関数"><span class="header-section-number">2</span> 比較する関数</a></li>
+  <li><a href="#実装したカメラlog" id="toc-実装したカメラlog" class="nav-link" data-scroll-target="#実装したカメラlog"><span class="header-section-number">3</span> 実装したカメラLog</a>
+  <ul class="collapse">
+  <li><a href="#カーブ本体" id="toc-カーブ本体" class="nav-link" data-scroll-target="#カーブ本体"><span class="header-section-number">3.1</span> カーブ本体</a></li>
+  </ul></li>
+  <li><a href="#scene-linear軸での微分" id="toc-scene-linear軸での微分" class="nav-link" data-scroll-target="#scene-linear軸での微分"><span class="header-section-number">4</span> Scene-linear軸での微分</a>
+  <ul class="collapse">
+  <li><a href="#階微分" id="toc-階微分" class="nav-link" data-scroll-target="#階微分"><span class="header-section-number">4.1</span> 1階微分</a></li>
+  <li><a href="#階微分-1" id="toc-階微分-1" class="nav-link" data-scroll-target="#階微分-1"><span class="header-section-number">4.2</span> 2階微分</a></li>
+  </ul></li>
+  <li><a href="#stop軸で見る" id="toc-stop軸で見る" class="nav-link" data-scroll-target="#stop軸で見る"><span class="header-section-number">5</span> Stop軸で見る</a>
+  <ul class="collapse">
+  <li><a href="#カーブ本体-1" id="toc-カーブ本体-1" class="nav-link" data-scroll-target="#カーブ本体-1"><span class="header-section-number">5.1</span> カーブ本体</a></li>
+  <li><a href="#stopあたりの符号配分" id="toc-stopあたりの符号配分" class="nav-link" data-scroll-target="#stopあたりの符号配分"><span class="header-section-number">5.2</span> 1 stopあたりの符号配分</a></li>
+  <li><a href="#stop軸の2階微分" id="toc-stop軸の2階微分" class="nav-link" data-scroll-target="#stop軸の2階微分"><span class="header-section-number">5.3</span> Stop軸の2階微分</a></li>
+  </ul></li>
+  <li><a href="#インタラクティブ比較と接続点拡大" id="toc-インタラクティブ比較と接続点拡大" class="nav-link" data-scroll-target="#インタラクティブ比較と接続点拡大"><span class="header-section-number">6</span> インタラクティブ比較と接続点拡大</a></li>
+  <li><a href="#グレーでの比較" id="toc-グレーでの比較" class="nav-link" data-scroll-target="#グレーでの比較"><span class="header-section-number">7</span> 18%グレーでの比較</a></li>
+  <li><a href="#接続点を比較する" id="toc-接続点を比較する" class="nav-link" data-scroll-target="#接続点を比較する"><span class="header-section-number">8</span> 接続点を比較する</a></li>
+  <li><a href="#cie-labを接続設計の比較例にする" id="toc-cie-labを接続設計の比較例にする" class="nav-link" data-scroll-target="#cie-labを接続設計の比較例にする"><span class="header-section-number">9</span> CIE Labを接続設計の比較例にする</a></li>
+  <li><a href="#cineonを歴史的な参照にする" id="toc-cineonを歴史的な参照にする" class="nav-link" data-scroll-target="#cineonを歴史的な参照にする"><span class="header-section-number">10</span> Cineonを歴史的な参照にする</a></li>
+  <li><a href="#ここまでで見えてくること" id="toc-ここまでで見えてくること" class="nav-link" data-scroll-target="#ここまでで見えてくること"><span class="header-section-number">11</span> ここまでで見えてくること</a></li>
+  <li><a href="#次の拡張候補" id="toc-次の拡張候補" class="nav-link" data-scroll-target="#次の拡張候補"><span class="header-section-number">12</span> 次の拡張候補</a></li>
+  <li><a href="#再現用ファイル" id="toc-再現用ファイル" class="nav-link" data-scroll-target="#再現用ファイル"><span class="header-section-number">13</span> 再現用ファイル</a></li>
+  <li><a href="#参考文献" id="toc-参考文献" class="nav-link" data-scroll-target="#参考文献"><span class="header-section-number">14</span> 参考文献</a></li>
+  </ul>
+</nav>
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">公開仕様から見るLogカーブ</h1>
+<p class="subtitle lead">微分・2階微分・接続条件 — メーカー公開文書の実装比較</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="このノートの範囲" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> このノートの範囲</h1>
+<p>このノートは、各メーカーが公開している仕様書・データシート・ホワイトペーパーに記載された<strong>前向きの符号化関数</strong>を再実装し、同じ座標系に置いて比較するためのものです。カメラ実機を測定してOETFを推定したものではなく、各社の内部画像処理、センサー固有処理、EI依存処理、量子化、クリップ、メタデータ処理まで再現するものでもありません。</p>
+<p>したがって、ここでいう「ARRI LogC3」「S-Log3」「N-Log」などは、厳密には<strong>公開文書に書かれた数式の実装</strong>です。係数が有限桁で公表されている場合、接続点に見えるごく小さな値のずれが、設計上の不連続なのか、公開係数の丸めによるものなのかは区別できません。本稿ではその場合、<code>as printed</code>（公表式をそのまま計算した結果）として扱います。</p>
+<p>CIE <span class="math inline">\(L^*\)</span> と Cineon は比較参照です。CIE <span class="math inline">\(L^*\)</span> は知覚的明度関数、Cineon はフィルム濃度をデジタル化するための系譜に属し、現代のカメラLogと同一カテゴリのOETFではありません。Cineonについては、Kodak/Cineonの既定値と、それを再記述したFilmLightの式を用いた<strong>参照実装</strong>です。<span class="citation" data-cites="kodak-cineon filmlight-cineon">(<a href="#ref-kodak-cineon" role="doc-biblioref">Eastman Kodak Company 1995年</a>; <a href="#ref-filmlight-cineon" role="doc-biblioref">FilmLight Ltd. 2010年</a>)</span></p>
+</section>
+<section id="比較する関数" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> 比較する関数</h1>
+<p>カメラLogについて、共通の入力変数を <span class="math inline">\(r\)</span> とします。ここでは比較の便宜上、<span class="math inline">\(r=0.18\)</span> を18%グレーに対応する scene-linear / reflectance-like 入力として扱います。</p>
+<p>Canonのホワイトペーパーだけは、公開式の変数を <code>Scene Linear</code> とし、別途</p>
+<p><span class="math display">\[
+\mathrm{reflection}=0.9\times\mathrm{Scene\ Linear}
+\]</span></p>
+<p>と記載しています。したがって本比較ではCanonについて <span class="math inline">\(u=r/0.9\)</span> と置き換えてから公開式を適用しています。<span class="citation" data-cites="canon-log">(<a href="#ref-canon-log" role="doc-biblioref">Canon USA, Inc. 2018年</a>)</span></p>
+<p>前向き符号化を</p>
+<p><span class="math display">\[
+y=f(r)
+\]</span></p>
+<p>とし、scene-linear軸では</p>
+<p><span class="math display">\[
+f'(r)=\frac{dy}{dr},\qquad
+f''(r)=\frac{d^2y}{dr^2}
+\]</span></p>
+<p>を比較します。</p>
+<p>また、18%グレーからの露光段数</p>
+<p><span class="math display">\[
+s=\log_2\frac{r}{0.18},\qquad r=0.18\,2^s
+\]</span></p>
+<p>を導入し、</p>
+<p><span class="math display">\[
+g(s)=f(0.18\,2^s)
+\]</span></p>
+<p>とすると、</p>
+<p><span class="math display">\[
+g'(s)=\ln 2\;r f'(r)
+\]</span></p>
+<p><span class="math display">\[
+g''(s)=(\ln 2)^2\left[r f'(r)+r^2 f''(r)\right]
+\]</span></p>
+<p>です。<span class="math inline">\(g'(s)\)</span> は「1 stopあたりに符号空間をどれだけ割り当てるか」、<span class="math inline">\(g''(s)\)</span> はその割当量がstopごとにどう変化するか、と読めます。</p>
+</section>
+<section id="実装したカメラlog" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> 実装したカメラLog</h1>
+<p>今回の版では次を実装しています。</p>
+<ul>
+<li>ARRI LogC3 EI800（exposure-value parameter set）<span class="citation" data-cites="arri-logc3">(<a href="#ref-arri-logc3" role="doc-biblioref">Brendel と Goldstone 2017年</a>)</span></li>
+<li>ARRI LogC4 <span class="citation" data-cites="arri-logc4">(<a href="#ref-arri-logc4" role="doc-biblioref">ARRI 2025年</a>)</span></li>
+<li>Sony S-Log3 <span class="citation" data-cites="sony-slog3">(<a href="#ref-sony-slog3" role="doc-biblioref">Sony Corporation 2014年</a>)</span></li>
+<li>Panasonic V-Log <span class="citation" data-cites="panasonic-vlog">(<a href="#ref-panasonic-vlog" role="doc-biblioref">Panasonic Corporation 2014年</a>)</span></li>
+<li>FUJIFILM F-Log <span class="citation" data-cites="fujifilm-flog">(<a href="#ref-fujifilm-flog" role="doc-biblioref">FUJIFILM Corporation 2024年a</a>)</span></li>
+<li>FUJIFILM F-Log2 <span class="citation" data-cites="fujifilm-flog2">(<a href="#ref-fujifilm-flog2" role="doc-biblioref">FUJIFILM Corporation 2024年b</a>)</span></li>
+<li>Nikon N-Log <span class="citation" data-cites="nikon-nlog">(<a href="#ref-nikon-nlog" role="doc-biblioref">Nikon Corporation 2018年</a>)</span></li>
+<li>Canon Log / Canon Log 2 / Canon Log 3 <span class="citation" data-cites="canon-log">(<a href="#ref-canon-log" role="doc-biblioref">Canon USA, Inc. 2018年</a>)</span></li>
+<li>RED Log3G10 <span class="citation" data-cites="red-log3g10">(<a href="#ref-red-log3g10" role="doc-biblioref">RED Digital Cinema 2017年</a>)</span></li>
+</ul>
+<section id="カーブ本体" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="カーブ本体"><span class="header-section-number">3.1</span> カーブ本体</h2>
+<p><img src="assets/figures/overview/camera_log_curves_scene_linear.svg" class="img-fluid"></p>
+<p>カーブ本体を重ねただけでも差は見えますが、設計上の違いは微分の方が読み取りやすくなります。</p>
+</section>
+</section>
+<section id="scene-linear軸での微分" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Scene-linear軸での微分</h1>
+<section id="階微分" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="階微分"><span class="header-section-number">4.1</span> 1階微分</h2>
+<p><img src="assets/figures/overview/camera_log_first_derivative_scene_linear.svg" class="img-fluid"></p>
+<p><span class="math inline">\(f'(r)\)</span> は scene-linear 入力に対する局所ゲインです。低域を線形枝で処理する曲線では一定区間が現れ、対数枝へ入ると概ね <span class="math inline">\(1/(ar+b)\)</span> 型に低下します。</p>
+</section>
+<section id="階微分-1" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="階微分-1"><span class="header-section-number">4.2</span> 2階微分</h2>
+<p><img src="assets/figures/overview/camera_log_second_derivative_scene_linear.svg" class="img-fluid"></p>
+<p><span class="math inline">\(f''(r)\)</span> は局所ゲインの変化です。線形枝では0、対数枝では通常負となります。したがって、piecewiseな設計では接続点が2階微分で非常に目立ちます。</p>
+</section>
+</section>
+<section id="stop軸で見る" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> Stop軸で見る</h1>
+<section id="カーブ本体-1" class="level2" data-number="5.1">
+<h2 data-number="5.1" class="anchored" data-anchor-id="カーブ本体-1"><span class="header-section-number">5.1</span> カーブ本体</h2>
+<p><img src="assets/figures/overview/camera_log_curves_stops.svg" class="img-fluid"></p>
+</section>
+<section id="stopあたりの符号配分" class="level2" data-number="5.2">
+<h2 data-number="5.2" class="anchored" data-anchor-id="stopあたりの符号配分"><span class="header-section-number">5.2</span> 1 stopあたりの符号配分</h2>
+<p><img src="assets/figures/overview/camera_log_first_derivative_stops.svg" class="img-fluid"></p>
+<p>この図は今回もっとも解釈しやすい図の一つです。純粋な <span class="math inline">\(\log r\)</span> なら、<span class="math inline">\(r=0.18\,2^s\)</span> を代入した後は <span class="math inline">\(s\)</span> に対する一次関数になるため、<span class="math inline">\(g'(s)\)</span> は一定になります。</p>
+<p>Nikon N-Logは、<span class="math inline">\(r\ge0.328\)</span> で</p>
+<p><span class="math display">\[
+x=150\ln r+619
+\]</span></p>
+<p>と定義されているため、上側の枝では</p>
+<p><span class="math display">\[
+\frac{dx}{ds}=150\ln2
+\]</span></p>
+<p>が一定になります。つまりN-Logの上側は、stop軸では文字通り直線です。<span class="citation" data-cites="nikon-nlog">(<a href="#ref-nikon-nlog" role="doc-biblioref">Nikon Corporation 2018年</a>)</span></p>
+</section>
+<section id="stop軸の2階微分" class="level2" data-number="5.3">
+<h2 data-number="5.3" class="anchored" data-anchor-id="stop軸の2階微分"><span class="header-section-number">5.3</span> Stop軸の2階微分</h2>
+<p><img src="assets/figures/overview/camera_log_second_derivative_stops.svg" class="img-fluid"></p>
+<p>この表現では、「どこから1 stopあたりの配分がほぼ一定になるか」が見やすくなります。N-Log上側の <span class="math inline">\(g''(s)=0\)</span> はその典型例です。</p>
+</section>
+</section>
+<section id="インタラクティブ比較と接続点拡大" class="level1" data-number="6">
+<h1 data-number="6"><span class="header-section-number">6</span> インタラクティブ比較と接続点拡大</h1>
+<p>静的な全体図は俯瞰用として残し、下の比較ウィンドウではチェックボックスで任意のカーブをハイライトできます。選択は scene-linear / stop 軸の6図に同時反映され、同じ選択に応じて接続点近傍の value・1階微分・2階微分も表示されます。</p>
+<div class="quarto-figure quarto-figure-center">
+<iframe src="compare.html" style="width:100%;height:930px;border:1px solid #ddd;border-radius:8px;" loading="lazy">
+</iframe>
+</div>
+<p>静的PDFではインタラクティブ要素を分岐し、全体図に加えて各カーブの個別コンタクトシートを収録しています。</p>
+</section>
+<section id="グレーでの比較" class="level1" data-number="7">
+<h1 data-number="7"><span class="header-section-number">7</span> 18%グレーでの比較</h1>
+<p><code>1023×y</code> と <code>1023×dy/dstop</code> は、正規化出力を単純に1023倍した<strong>比較用の尺度</strong>です。すべてのフォーマットのネイティブ10-bit符号値を意味しません。たとえばLogC4は12-bit指向の仕様として定義されています。<span class="citation" data-cites="arri-logc4">(<a href="#ref-arri-logc4" role="doc-biblioref">ARRI 2025年</a>)</span></p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 22%">
+<col style="width: 12%">
+<col style="width: 12%">
+<col style="width: 27%">
+<col style="width: 24%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Curve</th>
+<th style="text-align: right;">y(18%)</th>
+<th style="text-align: right;">1023×y</th>
+<th style="text-align: right;">1023×dy/dstop at 18%</th>
+<th style="text-align: right;">d²y/dstop² at 18%</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">ARRI LogC3 EI800</td>
+<td style="text-align: right;">0.391007</td>
+<td style="text-align: right;">400</td>
+<td style="text-align: right;">72.3416</td>
+<td style="text-align: right;">0.002435</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">ARRI LogC4</td>
+<td style="text-align: right;">0.278396</td>
+<td style="text-align: right;">284.799</td>
+<td style="text-align: right;">57.1768</td>
+<td style="text-align: right;">0.005324</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Sony S-Log3</td>
+<td style="text-align: right;">0.410557</td>
+<td style="text-align: right;">420</td>
+<td style="text-align: right;">74.5762</td>
+<td style="text-align: right;">0.002659</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Panasonic V-Log</td>
+<td style="text-align: right;">0.423311</td>
+<td style="text-align: right;">433.048</td>
+<td style="text-align: right;">70.9348</td>
+<td style="text-align: right;">0.002223</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">FUJIFILM F-Log</td>
+<td style="text-align: right;">0.459318</td>
+<td style="text-align: right;">469.883</td>
+<td style="text-align: right;">96.9637</td>
+<td style="text-align: right;">0.005682</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">FUJIFILM F-Log2</td>
+<td style="text-align: right;">0.391007</td>
+<td style="text-align: right;">400</td>
+<td style="text-align: right;">70.9364</td>
+<td style="text-align: right;">0.002926</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Nikon N-Log</td>
+<td style="text-align: right;">0.363668</td>
+<td style="text-align: right;">372.032</td>
+<td style="text-align: right;">82.5194</td>
+<td style="text-align: right;">0.020128</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Canon Log</td>
+<td style="text-align: right;">0.34339</td>
+<td style="text-align: right;">351.288</td>
+<td style="text-align: right;">93.5126</td>
+<td style="text-align: right;">0.020898</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Canon Log 2</td>
+<td style="text-align: right;">0.398255</td>
+<td style="text-align: right;">407.415</td>
+<td style="text-align: right;">70.2927</td>
+<td style="text-align: right;">0.002586</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Canon Log 3</td>
+<td style="text-align: right;">0.343389</td>
+<td style="text-align: right;">351.287</td>
+<td style="text-align: right;">84.8026</td>
+<td style="text-align: right;">0.014377</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">RED Log3G10</td>
+<td style="text-align: right;">0.333333</td>
+<td style="text-align: right;">341</td>
+<td style="text-align: right;">63.2974</td>
+<td style="text-align: right;">0.003584</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="接続点を比較する" class="level1" data-number="8">
+<h1 data-number="8"><span class="header-section-number">8</span> 接続点を比較する</h1>
+<p>piecewise関数では、接続点で何を一致させているかを分けて考えます。</p>
+<ul>
+<li><span class="math inline">\(C^0\)</span>：関数値が連続</li>
+<li><span class="math inline">\(C^1\)</span>：1階微分まで連続</li>
+<li><span class="math inline">\(C^2\)</span>：2階微分まで連続</li>
+</ul>
+<p>以下は<strong>公表式に印刷された係数をそのまま使った数値判定</strong>です。<code>approx.</code> は公開係数の丸め精度ではほぼ一致する、という意味であり、メーカーの設計意図を断定するものではありません。</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 7%">
+<col style="width: 5%">
+<col style="width: 10%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 11%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Curve</th>
+<th style="text-align: right;">Join</th>
+<th style="text-align: left;">Domain</th>
+<th style="text-align: left;">Lower branch</th>
+<th style="text-align: left;">Upper branch</th>
+<th style="text-align: left;">C0</th>
+<th style="text-align: left;">C1</th>
+<th style="text-align: left;">C2</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">ARRI LogC3 EI800</td>
+<td style="text-align: right;">0.010591</td>
+<td style="text-align: left;">r</td>
+<td style="text-align: left;">linear</td>
+<td style="text-align: left;">log10</td>
+<td style="text-align: left;">approx. (within published precision)</td>
+<td style="text-align: left;">approx. (within published precision)</td>
+<td style="text-align: left;">no</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">ARRI LogC4</td>
+<td style="text-align: right;">-0.018057</td>
+<td style="text-align: left;">r</td>
+<td style="text-align: left;">linear extension (negative domain)</td>
+<td style="text-align: left;">log2</td>
+<td style="text-align: left;">yes (exact/as printed)</td>
+<td style="text-align: left;">yes (exact/as printed)</td>
+<td style="text-align: left;">no</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Sony S-Log3</td>
+<td style="text-align: right;">0.01125</td>
+<td style="text-align: left;">r</td>
+<td style="text-align: left;">linear</td>
+<td style="text-align: left;">log10</td>
+<td style="text-align: left;">yes (exact/as printed)</td>
+<td style="text-align: left;">no (as printed)</td>
+<td style="text-align: left;">no</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Panasonic V-Log</td>
+<td style="text-align: right;">0.01</td>
+<td style="text-align: left;">r</td>
+<td style="text-align: left;">linear</td>
+<td style="text-align: left;">log10</td>
+<td style="text-align: left;">approx. (within published precision)</td>
+<td style="text-align: left;">approx. (within published precision)</td>
+<td style="text-align: left;">no</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">FUJIFILM F-Log</td>
+<td style="text-align: right;">0.00089</td>
+<td style="text-align: left;">r</td>
+<td style="text-align: left;">linear</td>
+<td style="text-align: left;">log10</td>
+<td style="text-align: left;">approx. (within published precision)</td>
+<td style="text-align: left;">no (as printed)</td>
+<td style="text-align: left;">no</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">FUJIFILM F-Log2</td>
+<td style="text-align: right;">0.000889</td>
+<td style="text-align: left;">r</td>
+<td style="text-align: left;">linear</td>
+<td style="text-align: left;">log10</td>
+<td style="text-align: left;">approx. (within published precision)</td>
+<td style="text-align: left;">no (as printed)</td>
+<td style="text-align: left;">no</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Nikon N-Log</td>
+<td style="text-align: right;">0.328</td>
+<td style="text-align: left;">r</td>
+<td style="text-align: left;">cube root</td>
+<td style="text-align: left;">natural log</td>
+<td style="text-align: left;">approx. (within published precision)</td>
+<td style="text-align: left;">no (as printed)</td>
+<td style="text-align: left;">no</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Canon Log</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">published scene-linear</td>
+<td style="text-align: left;">signed log branch</td>
+<td style="text-align: left;">signed log branch</td>
+<td style="text-align: left;">yes (exact/as printed)</td>
+<td style="text-align: left;">yes (exact/as printed)</td>
+<td style="text-align: left;">no</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Canon Log 2</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">published scene-linear</td>
+<td style="text-align: left;">signed log branch</td>
+<td style="text-align: left;">signed log branch</td>
+<td style="text-align: left;">yes (exact/as printed)</td>
+<td style="text-align: left;">yes (exact/as printed)</td>
+<td style="text-align: left;">no</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Canon Log 3</td>
+<td style="text-align: right;">0.0126</td>
+<td style="text-align: left;">r (positive join)</td>
+<td style="text-align: left;">linear middle section</td>
+<td style="text-align: left;">log10</td>
+<td style="text-align: left;">approx. (within published precision)</td>
+<td style="text-align: left;">approx. (within published precision)</td>
+<td style="text-align: left;">no</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">RED Log3G10</td>
+<td style="text-align: right;">-0.01</td>
+<td style="text-align: left;">r</td>
+<td style="text-align: left;">linear extension (negative domain)</td>
+<td style="text-align: left;">log10</td>
+<td style="text-align: left;">yes (exact/as printed)</td>
+<td style="text-align: left;">approx. (within published precision)</td>
+<td style="text-align: left;">no</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">CIE L* / 100</td>
+<td style="text-align: right;">0.00885645</td>
+<td style="text-align: left;">Y/Yn</td>
+<td style="text-align: left;">linear</td>
+<td style="text-align: left;">cube root</td>
+<td style="text-align: left;">yes (exact/as printed)</td>
+<td style="text-align: left;">yes (exact/as printed)</td>
+<td style="text-align: left;">no</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Cineon reference</td>
+<td style="text-align: right;"></td>
+<td style="text-align: left;">none</td>
+<td style="text-align: left;">single smooth log with black offset</td>
+<td style="text-align: left;">single smooth log with black offset</td>
+<td style="text-align: left;">smooth/no piecewise join</td>
+<td style="text-align: left;">smooth/no piecewise join</td>
+<td style="text-align: left;">smooth/no piecewise join</td>
+</tr>
+</tbody>
+</table>
+<p>ここでかなり設計差が見えます。</p>
+<p>S-Log3は関数値は接続していますが、公表式をそのまま微分すると線形枝とLog枝の傾きは一致しません。V-LogとLogC3は、公開係数の精度では1階微分までほぼ一致します。F-Log/F-Log2は値はほぼつながりますが、傾きには明確な差が残ります。N-Logはさらに異なり、低域が線形ではなく立方根です。<span class="citation" data-cites="sony-slog3 panasonic-vlog arri-logc3 fujifilm-flog fujifilm-flog2 nikon-nlog">(<a href="#ref-sony-slog3" role="doc-biblioref">Sony Corporation 2014年</a>; <a href="#ref-panasonic-vlog" role="doc-biblioref">Panasonic Corporation 2014年</a>; <a href="#ref-arri-logc3" role="doc-biblioref">Brendel と Goldstone 2017年</a>; <a href="#ref-fujifilm-flog" role="doc-biblioref">FUJIFILM Corporation 2024年a</a>, <a href="#ref-fujifilm-flog2" role="doc-biblioref">2024年b</a>; <a href="#ref-nikon-nlog" role="doc-biblioref">Nikon Corporation 2018年</a>)</span></p>
+<p>Canon Log 3は中央に線形区間を持ち、その両側をLog枝で接続します。公開式では1階微分までほぼ一致します。一方、Canon Log / Log 2は0を境に符号反転したLog枝をつなぐ形で、0において <span class="math inline">\(C^1\)</span> ですが <span class="math inline">\(C^2\)</span> ではありません。<span class="citation" data-cites="canon-log">(<a href="#ref-canon-log" role="doc-biblioref">Canon USA, Inc. 2018年</a>)</span></p>
+<p>LogC4とRED Log3G10の線形枝は負値側の延長として置かれています。したがって、通常の非負scene-linear入力だけを見ると接続は表に出ませんが、ポストプロダクションで負値を扱うときには意味を持ちます。<span class="citation" data-cites="arri-logc4 red-log3g10">(<a href="#ref-arri-logc4" role="doc-biblioref">ARRI 2025年</a>; <a href="#ref-red-log3g10" role="doc-biblioref">RED Digital Cinema 2017年</a>)</span></p>
+</section>
+<section id="cie-labを接続設計の比較例にする" class="level1" data-number="9">
+<h1 data-number="9"><span class="header-section-number">9</span> CIE Labを接続設計の比較例にする</h1>
+<p>CIE 1976 <span class="math inline">\(L^*\)</span> は、カメラLogとは目的が違います。しかし「線形枝と非線形枝をどうつなぐか」という問題の非常にきれいな比較例です。CIEの定義は、<span class="math inline">\(t=Y/Y_n\)</span> として <span class="citation" data-cites="cie-lab">(<a href="#ref-cie-lab" role="doc-biblioref">CIE 2020年</a>)</span></p>
+<p><span class="math display">\[
+f(t)=
+\begin{cases}
+t^{1/3} &amp; t&gt;\delta^3\\
+\dfrac{t}{3\delta^2}+\dfrac{4}{29} &amp; t\le\delta^3
+\end{cases},\qquad
+\delta=\frac{6}{29}
+\]</span></p>
+<p><span class="math display">\[
+L^*=116f(t)-16
+\]</span></p>
+<p>です。</p>
+<p>接続点 <span class="math inline">\(t=\delta^3\)</span> では、関数値だけでなく1階微分も一致します。</p>
+<p><span class="math display">\[
+\left.\frac{d}{dt}t^{1/3}\right|_{t=\delta^3}
+=\frac{1}{3\delta^2}
+\]</span></p>
+<p>で、これは下側の線形枝の傾きそのものです。したがって <strong><span class="math inline">\(C^1\)</span> 連続</strong>です。一方、線形枝の2階微分は0、立方根枝の2階微分は0ではないので <strong><span class="math inline">\(C^2\)</span> ではありません</strong>。</p>
+<p><img src="assets/figures/overview/lab_junction_value.svg" class="img-fluid"></p>
+<p><img src="assets/figures/overview/lab_junction_first_derivative.svg" class="img-fluid"></p>
+<p>この例を入れることで、「piecewiseであること」自体が問題なのではなく、<strong>接続点で何階まで整合させるかが設計条件である</strong>と整理できます。</p>
+</section>
+<section id="cineonを歴史的な参照にする" class="level1" data-number="10">
+<h1 data-number="10"><span class="header-section-number">10</span> Cineonを歴史的な参照にする</h1>
+<p>Cineonは現代のカメラLogと同列には扱いません。もともとはネガフィルムの濃度情報を10-bit Logで保持するための仕組みで、基準黒95、基準白685、1 codeあたり0.002 densityという規約を持ちます。<span class="citation" data-cites="kodak-cineon">(<a href="#ref-kodak-cineon" role="doc-biblioref">Eastman Kodak Company 1995年</a>)</span></p>
+<p>ここでは後世の実装で広く用いられている、正規化linear値 <span class="math inline">\(r\)</span> からCineonへ写す参照式 <span class="citation" data-cites="filmlight-cineon">(<a href="#ref-filmlight-cineon" role="doc-biblioref">FilmLight Ltd. 2010年</a>)</span></p>
+<p><span class="math display">\[
+o=10^{(95-685)/300}
+\]</span></p>
+<p><span class="math display">\[
+y=\frac{685+300\log_{10}\left(r(1-o)+o\right)}{1023}
+\]</span></p>
+<p>を使っています。この式は非負入力域で単一の滑らかなLog関数なので、カメラLogで見られるような低域のpiecewise接続はありません。</p>
+<p><img src="assets/figures/overview/reference_curves_lab_cineon.svg" class="img-fluid"></p>
+<p>Labは「意図的に<span class="math inline">\(C^1\)</span>接続されたpiecewise関数」、Cineonは「単一のオフセット付きLog」という対照になり、現代カメラLogのtoe設計を眺める基準として使えます。</p>
+</section>
+<section id="ここまでで見えてくること" class="level1" data-number="11">
+<h1 data-number="11"><span class="header-section-number">11</span> ここまでで見えてくること</h1>
+<p>第一に、「Log」という名称だけでは局所構造はほとんど分かりません。純粋なLogに近い領域、線形toe、立方根toe、負値側の線形延長など、実際の公開式はかなり多様です。</p>
+<p>第二に、カーブ本体より <span class="math inline">\(f'(r)\)</span> の方が符号配分を直接見せ、<span class="math inline">\(f''(r)\)</span> の方が接続と圧縮率の変化を露出させます。さらにstop軸へ移すと、純粋Logが「1 stopあたり一定の割当」に対応することが直接見えます。</p>
+<p>第三に、接続条件は独立の設計軸として扱えます。Labのように<span class="math inline">\(C^1\)</span>を明示的に満たす例を横に置くと、メーカーLogの接続が単なる実装上の細部ではなく、局所的な符号配分を決める条件であることが分かりやすくなります。</p>
+<p>ただし、この比較から各カメラの「画質」「ダイナミックレンジ」「ノイズ性能」を直接順位づけることはできません。それらはセンサー、露出規約、量子化、ノイズ、クリッピング、後段処理まで含む別問題です。本稿が比較しているのは、あくまで<strong>公開された1次元伝達関数そのもの</strong>です。</p>
+</section>
+<section id="次の拡張候補" class="level1" data-number="12">
+<h1 data-number="12"><span class="header-section-number">12</span> 次の拡張候補</h1>
+<p>次に進めるなら、単にメーカー数を増やすより、以下の三方向が有効です。</p>
+<ol type="1">
+<li><strong>逆関数の微分</strong>：<span class="math inline">\(dr/dy=1/f'(r)\)</span> を描くと、符号値の誤差や量子化がscene-linear側でどれだけ増幅されるかを見る指標になります。</li>
+<li><strong>量子化を加えた解析</strong>：10-bit / 12-bitで1 codeが何stopに相当するかを各露光域で比較できます。</li>
+<li><strong>接続設計の参照群を増やす</strong>：ACEScctやHLGのようなpiecewise関数を加えると、camera Logだけでなく「低域を別枝で処理する伝達関数」という一般形で比較できます。</li>
+</ol>
+<p>この方向まで進めると、Logカーブ比較というより「1次元伝達関数を局所ゲイン・曲率・接続条件で読む」ための小さな解析フレームワークになります。</p>
+</section>
+<section id="再現用ファイル" class="level1" data-number="13">
+<h1 data-number="13"><span class="header-section-number">13</span> 再現用ファイル</h1>
+<p>本ノートに対応する生成スクリプトは <code>generate_log_gamma_artifacts.py</code>、数値表は <code>summary_at_18pct.csv</code> と <code>junction_continuity.csv</code>、サンプル値は <code>sampled_camera_curves.csv</code> / <code>sampled_camera_curves_stops.csv</code> です。SVGはすべてベクターのまま編集できます。</p>
+</section>
+<section id="参考文献" class="level1 unnumbered" data-number="14">
+
+
+</section>
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">14 参考文献</h2><div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="ref-arri-logc4" class="csl-entry" role="listitem">
+ARRI. 2025年. <em>ARRI LogC4 Logarithmic Color Space Specification</em>. ARRI. <a href="https://www.arri.com/resource/blob/278790/dc29f7399c1dc9553d329e27f1409a89/2022-05-arri-logc4-specification-data.pdf">https://www.arri.com/resource/blob/278790/dc29f7399c1dc9553d329e27f1409a89/2022-05-arri-logc4-specification-data.pdf</a>.
+</div>
+<div id="ref-arri-logc3" class="csl-entry" role="listitem">
+Brendel, Harald, と Joseph Goldstone. 2017年. <em>ALEXA Log C Curve: Usage in VFX</em>. ARRI. <a href="https://www.arri.com/resource/blob/31918/66f56e6abb6e5b6553929edf9aa7483e/2017-03-alexa-logc-curve-in-vfx-data.pdf">https://www.arri.com/resource/blob/31918/66f56e6abb6e5b6553929edf9aa7483e/2017-03-alexa-logc-curve-in-vfx-data.pdf</a>.
+</div>
+<div id="ref-canon-log" class="csl-entry" role="listitem">
+Canon USA, Inc. 2018年. <em>Canon Log Gamma Curves: Description of the Canon Log, Canon Log 2 and Canon Log 3 Gamma Curves</em>. Canon USA, Inc. <a href="https://www.usa.canon.com/content/dam/canon-assets/white-papers/pro/white-paper-canon-log-gamma-curves.pdf">https://www.usa.canon.com/content/dam/canon-assets/white-papers/pro/white-paper-canon-log-gamma-curves.pdf</a>.
+</div>
+<div id="ref-cie-lab" class="csl-entry" role="listitem">
+CIE. 2020年. <em>CIE 1976 L*a*b* colour space (CIELAB colour space)</em>. CIE e-ILV, term 17-23-076. <a href="https://cie.co.at/eilvterm/17-23-076">https://cie.co.at/eilvterm/17-23-076</a>.
+</div>
+<div id="ref-kodak-cineon" class="csl-entry" role="listitem">
+Eastman Kodak Company. 1995年. <em>Conversion of 10-bit Log Film Data to 8-bit Linear or Video Data for the Cineon Digital Film System</em>. Eastman Kodak Company.
+</div>
+<div id="ref-filmlight-cineon" class="csl-entry" role="listitem">
+FilmLight Ltd. 2010年. <em>Setting a Truelight Profile</em>. FilmLight Ltd. <a href="https://www.filmlight.ltd.uk/pdf/whitepapers/FL-TL-TN-0416-SettingTLProfile.pdf">https://www.filmlight.ltd.uk/pdf/whitepapers/FL-TL-TN-0416-SettingTLProfile.pdf</a>.
+</div>
+<div id="ref-fujifilm-flog" class="csl-entry" role="listitem">
+FUJIFILM Corporation. 2024年a. <em>F-Log Data Sheet</em>. FUJIFILM Corporation. <a href="https://dl.fujifilm-x.com/technical-data/F-Log_DataSheet_E_Ver.1.2.pdf">https://dl.fujifilm-x.com/technical-data/F-Log_DataSheet_E_Ver.1.2.pdf</a>.
+</div>
+<div id="ref-fujifilm-flog2" class="csl-entry" role="listitem">
+FUJIFILM Corporation. 2024年b. <em>F-Log2 Data Sheet</em>. FUJIFILM Corporation. <a href="https://dl.fujifilm-x.com/technical-data/F-Log2_DataSheet_E_Ver.1.1.pdf">https://dl.fujifilm-x.com/technical-data/F-Log2_DataSheet_E_Ver.1.1.pdf</a>.
+</div>
+<div id="ref-nikon-nlog" class="csl-entry" role="listitem">
+Nikon Corporation. 2018年. <em>N-Log Specification Document</em>. Nikon Corporation. <a href="https://download.nikonimglib.com/archive3/hDCmK00m9JDI03RPruD74xpoU905/N-Log_Specification_%28En%2901.pdf">https://download.nikonimglib.com/archive3/hDCmK00m9JDI03RPruD74xpoU905/N-Log_Specification_%28En%2901.pdf</a>.
+</div>
+<div id="ref-panasonic-vlog" class="csl-entry" role="listitem">
+Panasonic Corporation. 2014年. <em>V-Log/V-Gamut Reference Manual</em>. Panasonic Corporation. <a href="https://pro-av.panasonic.net/en/cinema_camera_varicam_eva/support/pdf/VARICAM_V-Log_V-Gamut.pdf">https://pro-av.panasonic.net/en/cinema_camera_varicam_eva/support/pdf/VARICAM_V-Log_V-Gamut.pdf</a>.
+</div>
+<div id="ref-red-log3g10" class="csl-entry" role="listitem">
+RED Digital Cinema. 2017年. <em>White Paper on REDWideGamutRGB and Log3G10</em>. RED Digital Cinema. <a href="https://docs.red.com/955-0187/PDF/915-0187%20Rev-C%20%20%20RED%20OPS,%20White%20Paper%20on%20REDWideGamutRGB%20and%20Log3G10.pdf">https://docs.red.com/955-0187/PDF/915-0187%20Rev-C%20%20%20RED%20OPS,%20White%20Paper%20on%20REDWideGamutRGB%20and%20Log3G10.pdf</a>.
+</div>
+<div id="ref-sony-slog3" class="csl-entry" role="listitem">
+Sony Corporation. 2014年. <em>Technical Summary for S-Gamut3.Cine/S-Log3 and S-Gamut3/S-Log3</em>. Sony Corporation. <a href="https://pro.sony/s3/cms-static-content/uploadfile/06/1237494271406.pdf">https://pro.sony/s3/cms-static-content/uploadfile/06/1237494271406.pdf</a>.
+</div>
+</div></section></div></main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "コピーしました");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "コピーしました");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

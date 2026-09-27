@@ -1,0 +1,46 @@
+/* Layout for the GitHub Pages article. */
+
+/* Keep prose comfortable to read. Quarto's main content container may vary by theme,
+   so this only constrains paragraph-like article content where supported. */
+main.content, #quarto-content main.content {
+  --article-prose-width: 36em;
+}
+
+/* Static article figures: intentionally about half the width of the interactive comparator. */
+img.overview-figure {
+  display: block;
+  width: min(760px, 94vw);
+  max-width: none;
+  height: auto;
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+/* Interactive comparator can use the full desktop viewport. */
+.wide-interactive {
+  width: min(1500px, 94vw);
+  margin-left: 50%;
+  transform: translateX(-50%);
+}
+.wide-interactive iframe {
+  width: 100%;
+  min-height: 930px;
+}
+
+@media (max-width: 700px) {
+  img.overview-figure {
+    width: 100%;
+    max-width: 100%;
+    left: 0;
+    transform: none;
+  }
+  .wide-interactive {
+    width: 100%;
+    margin-left: 0;
+    transform: none;
+  }
+  .wide-interactive iframe { min-height: 1200px; }
+}

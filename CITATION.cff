@@ -1,0 +1,12 @@
+cff-version: 1.2.0
+message: "If you use this implementation or its figures, please cite the repository and the original manufacturer specifications listed in references.bib."
+title: "Public Log Curve Derivatives"
+type: software
+authors:
+  - family-names: "Yokota"
+    given-names: "Bungaku"
+year: 2026
+license: MIT
+
+repository-code: "https://github.com/goldkiss2010-ai/log_curve_derivatives_github_pages"
+url: "https://goldkiss2010-ai.github.io/log_curve_derivatives_github_pages/"
