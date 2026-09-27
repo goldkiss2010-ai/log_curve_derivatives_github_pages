@@ -420,37 +420,81 @@ const boxes=[...document.querySelectorAll('.curve-option input')]; function upda
 
 
 def make_individual_assets():
-    r = np.unique(np.r_[np.geomspace(float(CONFIG.get("scene_min", 1e-5)), 0.02, 320), np.geomspace(0.02, float(CONFIG.get("scene_max", 16.0)), 520)])
+    """Build one contact-sheet image per camera curve.
+
+    Row 1 is the full scene-linear curve / first derivative / second derivative.
+    Every declared junction then gets its own additional row.  This deliberately
+    does not collapse multi-junction curves to `primary_junction`: Apple Log,
+    Canon Log 3, or any future multi-piece curve therefore exposes every join in
+    the static contact sheet as well as in the interactive viewer.
+    """
+    r = np.unique(np.r_[np.geomspace(float(CONFIG.get("scene_min", 1e-5)), 0.02, 320),
+                        np.geomspace(0.02, float(CONFIG.get("scene_max", 16.0)), 520)])
     all_d2 = np.concatenate([cm.d2(c, r) for c in CAMERAS])
     finite = all_d2[np.isfinite(all_d2)]
     d2_lim = max(np.percentile(np.abs(finite), 99.8), 1.0)
     assets = {}
+
     for c in CAMERAS:
-        fig, axes = plt.subplots(2, 3, figsize=(12.8, 7.2))
+        junctions = list(c.get("junctions", []))
+        nrows = 1 + max(1, len(junctions))
+        fig, axes = plt.subplots(nrows, 3, figsize=(12.8, 3.45 * nrows), squeeze=False)
+
         funcs = [cm.encode, cm.d1, cm.d2]
         titles = ["curve f(r)", "first derivative f'(r)", "second derivative f''(r)"]
-        for ax, fun, title, ys in zip(axes[0], funcs, titles, ["linear", "log", "symlog"]):
-            ax.plot(r, fun(c, r), linewidth=1.4); ax.set_xscale("log")
-            if ys == "log": ax.set_yscale("log")
-            if ys == "symlog": ax.set_yscale("symlog", linthresh=1e-2); ax.set_ylim(-d2_lim, d2_lim)
-            pj = cm.primary_junction(c)
-            if pj and float(pj["value"]) > 0: ax.axvline(float(pj["value"]), linestyle="--", linewidth=.8)
-            ax.set_title(title, fontsize=10); ax.set_xlabel("r", fontsize=8); ax.tick_params(labelsize=7); ax.grid(True, which="both", alpha=.2)
-        pj = cm.primary_junction(c)
-        if pj:
-            lo, hi = junction_range(c, pj); xj = np.linspace(lo, hi, 650); jv = float(pj["value"])
-            for ax, fun, title in zip(axes[1], funcs, ["primary junction: value", "primary junction: first derivative", "primary junction: second derivative"]):
-                ax.plot(xj, fun(c, xj), linewidth=1.4); ax.axvline(jv, linestyle="--", linewidth=.8)
-                ax.set_title(title, fontsize=10); ax.set_xlabel("r", fontsize=8); ax.tick_params(labelsize=7); ax.grid(True, alpha=.2)
-        else:
-            for ax in axes[1]: ax.axis("off")
-        fig.suptitle(c["name"], fontsize=15, y=.985)
-        fig.text(.5, .012, "Published-formula implementation; source keys: " + ", ".join(c.get("sources", [])), ha="center", fontsize=8)
-        fig.tight_layout(rect=[0, .03, 1, .96])
-        png = FIG_IND / f"individual_{c['id']}.png"
-        fig.savefig(png, dpi=120); plt.close(fig); assets[c["id"]] = png
-    return assets
 
+        # Overview row.  Positive junctions can be marked on the log-scaled x axis.
+        for ax, fun, title, ys in zip(axes[0], funcs, titles, ["linear", "log", "symlog"]):
+            ax.plot(r, fun(c, r), linewidth=1.4)
+            ax.set_xscale("log")
+            if ys == "log":
+                ax.set_yscale("log")
+            if ys == "symlog":
+                ax.set_yscale("symlog", linthresh=1e-2)
+                ax.set_ylim(-d2_lim, d2_lim)
+            for j in junctions:
+                jv = float(j["value"])
+                if jv > 0:
+                    ax.axvline(jv, linestyle="--", linewidth=.8)
+            ax.set_title(title, fontsize=10)
+            ax.set_xlabel("r", fontsize=8)
+            ax.tick_params(labelsize=7)
+            ax.grid(True, which="both", alpha=.2)
+
+        # One complete value/d1/d2 triptych per declared junction.
+        if junctions:
+            for row_i, j in enumerate(junctions, start=1):
+                lo, hi = junction_range(c, j)
+                xj = np.linspace(lo, hi, 650)
+                jv = float(j["value"])
+                label = j.get("label", j.get("id", "junction"))
+                for ax, fun, quantity in zip(
+                    axes[row_i], funcs,
+                    ["value", "first derivative", "second derivative"]
+                ):
+                    ax.plot(xj, fun(c, xj), linewidth=1.4)
+                    ax.axvline(jv, linestyle="--", linewidth=.8)
+                    ax.set_title(f"{label}: {quantity}", fontsize=9.5)
+                    ax.set_xlabel("r", fontsize=8)
+                    ax.tick_params(labelsize=7)
+                    ax.grid(True, alpha=.2)
+        else:
+            for ax in axes[1]:
+                ax.axis("off")
+
+        fig.suptitle(c["name"], fontsize=15, y=.992)
+        fig.text(
+            .5, .008,
+            "Published-formula implementation; source keys: " + ", ".join(c.get("sources", [])),
+            ha="center", fontsize=8
+        )
+        fig.tight_layout(rect=[0, .025, 1, .965])
+        png = FIG_IND / f"individual_{c['id']}.png"
+        fig.savefig(png, dpi=120)
+        plt.close(fig)
+        assets[c["id"]] = png
+
+    return assets
 
 def build_pdf(individual_assets):
     from reportlab.pdfgen import canvas
@@ -503,14 +547,45 @@ def build_pdf(individual_assets):
         cpdf.setFont(font, 7.3); cpdf.drawCentredString(x0+cw/2, y0+2, cap)
     page_no(page); cpdf.showPage(); page += 1
 
-    for i in range(0, len(CAMERAS), 2):
-        names = CAMERAS[i:i+2]; header("Individual curve contact sheets")
-        ah = ph-64; card_h=(ah-10)/2
-        for k, curve in enumerate(names):
-            img = ImageReader(str(individual_assets[curve["id"]])); iw, ih = img.getSize(); x0=28; y0=ph-55-(k+1)*card_h-k*10; maxw=pw-56; maxh=card_h-4
-            scale=min(maxw/iw,maxh/ih); dw,dh=iw*scale,ih*scale
-            cpdf.drawImage(img,x0+(maxw-dw)/2,y0+(maxh-dh)/2,dw,dh,preserveAspectRatio=True,mask="auto")
+    # Curves with more than one declared junction get a full page so that all
+    # junction triptychs remain readable.  Single-junction curves still share
+    # two cards per page.
+    i = 0
+    while i < len(CAMERAS):
+        curve = CAMERAS[i]
+        if len(curve.get("junctions", [])) > 1:
+            header("Individual curve contact sheet", f"{curve['name']} - all declared junctions")
+            img = ImageReader(str(individual_assets[curve["id"]]))
+            iw, ih = img.getSize()
+            x0, y0 = 28, 28
+            maxw, maxh = pw - 56, ph - 86
+            scale = min(maxw / iw, maxh / ih)
+            dw, dh = iw * scale, ih * scale
+            cpdf.drawImage(img, x0 + (maxw-dw)/2, y0 + (maxh-dh)/2,
+                           dw, dh, preserveAspectRatio=True, mask="auto")
+            page_no(page); cpdf.showPage(); page += 1
+            i += 1
+            continue
+
+        names = [curve]
+        if i + 1 < len(CAMERAS) and len(CAMERAS[i+1].get("junctions", [])) <= 1:
+            names.append(CAMERAS[i+1])
+
+        header("Individual curve contact sheets")
+        ah = ph - 64
+        card_h = (ah - 10) / 2
+        for k, card_curve in enumerate(names):
+            img = ImageReader(str(individual_assets[card_curve["id"]]))
+            iw, ih = img.getSize()
+            x0 = 28
+            y0 = ph - 55 - (k+1)*card_h - k*10
+            maxw, maxh = pw - 56, card_h - 4
+            scale = min(maxw / iw, maxh / ih)
+            dw, dh = iw * scale, ih * scale
+            cpdf.drawImage(img, x0 + (maxw-dw)/2, y0 + (maxh-dh)/2,
+                           dw, dh, preserveAspectRatio=True, mask="auto")
         page_no(page); cpdf.showPage(); page += 1
+        i += len(names)
 
     header("参考文献 / implementation sources", "数式を拾った公開文書。完全なURLは companion QMD / references.bib に収録。")
     y=ph-70

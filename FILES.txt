@@ -67,6 +67,7 @@ generated/summary_table.qmd
 index.html
 references.bib
 requirements.txt
+scripts/__pycache__/curve_models.cpython-313.pyc
 scripts/build_all.py
 scripts/curve_models.py
 styles.css
