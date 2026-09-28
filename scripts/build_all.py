@@ -625,6 +625,18 @@ def render_index():
             "--mathjax=https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js", "-o", str(ROOT/"index.html")
         ]
         subprocess.run(cmd, cwd=ROOT, check=True)
+
+        # Older Pandoc versions may inject polyfill.io when using MathJax.
+        # It is unnecessary for our target browsers and can cause long page-load stalls.
+        index_path = ROOT / "index.html"
+        html_text = index_path.read_text(encoding="utf-8")
+        html_text = re.sub(
+            r'\s*<script src="https://polyfill\.io/[^"]*"></script>',
+            "",
+            html_text,
+        )
+        index_path.write_text(html_text, encoding="utf-8")
+
         temp.unlink(missing_ok=True)
     elif shutil.which("quarto"):
         temp.unlink(missing_ok=True)
